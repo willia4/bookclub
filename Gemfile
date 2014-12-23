@@ -1,0 +1,10 @@
+source 'https://rubygems.org'
+gem 'rack'
+gem 'sinatra'
+gem 'rack-throttle'
+gem 'facets'
+gem 'sinatra-content-for2'
+gem 'sprockets'
+gem 'sass'
+
+gem 'aws-sdk-core'
