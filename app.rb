@@ -1,4 +1,5 @@
 require 'sass'
+require './database.rb'
 
 # The sass rack plugin just won't work (it refuses to update the css if you change the .scss template and ignores its configuration and is generally horrible)
 # so this will let us at least use sass css files without having to run compass or something. 
@@ -19,7 +20,7 @@ get '/stylesheets/:name.css' do |name|
 end
 
 configure do 
-  
+  #Database.init_amazon
 end
 
 get '/' do
