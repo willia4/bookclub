@@ -3,6 +3,7 @@ require 'bundler'
 Bundler.setup
 
 require 'sinatra'
+require 'sinatra/content_for2'
 require 'rack/throttle'
 require 'yaml'
 

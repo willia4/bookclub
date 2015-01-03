@@ -1,0 +1,17 @@
+nav#main-navigation {
+	.avatar {
+		max-height: 32px;
+		padding-right: 15px;
+	}
+
+	#nav-signin-dropdown {
+		.dropdown-menu {
+			padding: 15px;
+		}
+
+		#button-facebook-signin {
+			display: block;
+			margin-bottom: 15px;
+		}
+	}
+}

@@ -34,8 +34,16 @@ before do
   @session_state = {
     :logged_in => false,
     :user_id => nil,
-    :user_name => nil
+    :user_name => nil,
+    :avatar => "images/empty_avatar.png",
+    :show_admin => false
   }
+
+  # @session_state[:logged_in] = true
+  # @session_state[:user_id] = 1
+  # @session_state[:user_name] = "James Williams"
+  # @session_state[:avatar] = "http://jameswilliams.me/avatar"
+  # @session_state[:show_admin] = false
 end
 
 get '/' do

@@ -1,0 +1,43 @@
+<nav id="main-navigation" role="navigation" class="navbar navbar-default">
+	<div class="navbar-header">
+		<button type="button" data-target="#navbarCollapse" data-toggle="collapse" class="navbar-toggle">
+			<span class="sr-only">Toggle Navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</button>
+		<a href="#" class="navbar-brand"><%= $config[:general][:site_name] %></a>
+	</div>
+
+	<div id="navbarCollapse" class="collapse navbar-collapse">
+	<% if @session_state[:show_admin] %>
+		<ul class="nav navbar-nav">
+			<li><a href="#">Admin Tools</a></li>
+		</ul>
+	<% end %>
+
+	<% if @session_state[:logged_in] %>
+		<ul class="nav navbar-nav navbar-right">
+			<li class="dropdown" id="nav-signin-dropdown">
+				<a class="dropdown-toggle" href="#" data-toggle="dropdown">
+					<img class="avatar" src="<%= @session_state[:avatar] %>"></img>
+					<%= @session_state[:user_name] %></a>
+				<div class="dropdown-menu">
+					<a id="button-signout" href="#">Sign out</a>
+				</div>
+			</li>
+		</ul>
+
+	<% else %>
+		<ul class="nav navbar-nav navbar-right">
+			<li class="dropdown" id="nav-signin-dropdown">
+				<a class="dropdown-toggle" href="#" data-toggle="dropdown">Sign in</a>
+				<div class="dropdown-menu">
+					<a id="button-facebook-signin" href="#"><img src="images/facebook_signin.png"></img></a>
+					<a id="button-google-signin" href="#"><img src="images/google_signin.png"></img></a>
+				</div>
+			</li>
+		</ul>
+	<% end %>
+	</div>
+</nav>
