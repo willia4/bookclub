@@ -8,21 +8,39 @@ require './database.rb'
 #
 # I really hate open source sometimes. 
 get '/stylesheets/:name.css' do |name|
-  path = "./public/stylesheets/sass/#{name}.scss"
+  css_path = "./public/stylesheets/#{name}.css"
+  scss_path = "./public/stylesheets/sass/#{name}.scss"
 
-  halt(404) if not File.exist?(path)
+  if File.exist?(css_path)
+    content_type 'text/css'
+    content = File.open(css_path, 'r') { |file| file.read }
 
-  content_type 'text/css'
-  content = File.open(path, 'r') { |file| file.read }
+    content
+  else
+    halt(404) if not File.exist?(scss_path)
 
-  engine = Sass::Engine.new content, :syntax => :scss
-  engine.render
+    content_type 'text/css'
+    content = File.open(scss_path, 'r') { |file| file.read }
+
+    engine = Sass::Engine.new content, :syntax => :scss
+    engine.render  
+  end  
 end
 
 configure do 
   #Database.init_amazon
 end
 
+before do
+  @session_state = {
+    :logged_in => false,
+    :user_id => nil,
+    :user_name => nil
+  }
+end
+
 get '/' do
+  @app_state = {:foo => "bar"}
+
 	erb :index
 end
