@@ -51,3 +51,24 @@ get '/' do
 
 	erb :index
 end
+
+error do
+  e = env['sinatra.error']
+
+  error_state = {
+    :generic_error => true,
+    :action => "Perform desired action",
+    :reason => "Please try again later"
+  }
+
+  if e.respond_to? "action" and e.respond_to? "reason"
+    error_state = {
+      :generic_error => false,
+      :action => e.action,
+      :reason => e.reason
+    }
+  end
+  
+  erb :error, :locals => {:error_state => error_state}
+end
+
