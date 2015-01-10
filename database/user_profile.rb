@@ -15,7 +15,11 @@ module Database
     end
 
     def self.save_user_profile profile 
-      profile.user_id = SecureRandom.hex(16) if (profile.user_id.nil? || profile.user_id == "")
+      if profile.user_id.nil? || profile.user_id == ""
+        #the first user should be an admin
+        profile.user_status = "admin" if count_user_profiles == 0
+        profile.user_id = SecureRandom.hex(16)  
+      end
 
       attributes = Models::UserProfile.profile_properties.map do |p|
         value = profile.send(p).to_s
