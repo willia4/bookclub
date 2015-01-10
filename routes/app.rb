@@ -35,7 +35,8 @@ before do
   @session_state = {
     :logged_in => false,
     :user_profile => nil,
-    :show_admin => false
+    :show_admin => false,
+    :session_token => nil
   }
 
   session_token = request.cookies[$config[:general][:login_cookie]]
@@ -45,6 +46,7 @@ before do
       @session_state[:logged_in] = true
       @session_state[:user_profile] = profile
       @session_state[:show_admin] = (profile.user_status == "admin")
+      @session_state[:session_token] = session_token
     end
   end
 end

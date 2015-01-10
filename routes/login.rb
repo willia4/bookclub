@@ -87,3 +87,17 @@ get '/signin/facebook/finish' do
 
   redirect $config[:general][:base_url], 302
 end
+
+get '/signout' do
+  session_token = @session_state[:session_token]
+  if !session_token.nil? && session_token != ""
+    Database::UserSessions.delete_user_session session_token
+  end
+
+  response.set_cookie($config[:general][:login_cookie], :value => "",
+                                                        :path => "/",
+                                                        :expires => Time.now,
+                                                        :max_age => 0)
+
+  redirect $config[:general][:base_url], 302
+end

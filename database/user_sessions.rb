@@ -41,6 +41,10 @@ module Database
       return profile
     end
 
+    def self.delete_user_session session_token
+      Database::SDB.delete_items("sessions", session_token)
+    end
+
     def self.cleanup_user_sessions
       SDB.expire_domain('sessions')
     end
