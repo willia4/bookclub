@@ -3,7 +3,7 @@ require 'rack'
 require 'json'
 
 require './exceptions/AppError.rb'
-require './database.rb'
+require './database/database.rb'
 require './facebook.rb'
 require './user_profile.rb'
 
@@ -17,8 +17,8 @@ get '/signin/facebook/begin' do
   app_id = URI.encode($config[:facebook][:app_id].to_s)
   redirect_url = URI.encode(Facebook.login_finish_redirect_url)
 
-  xsrf_token = Database.create_xsrf_token
-  state = URI.encode(Database.create_xsrf_token)
+  xsrf_token = Database::XSRFTokens.create_xsrf_token
+  state = URI.encode(Database::XSRFTokens.create_xsrf_token)
 
   login_url = "https://www.facebook.com/dialog/oauth?client_id=#{app_id}&redirect_uri=#{redirect_url}&state=#{state}&scope=email"
   
@@ -26,8 +26,8 @@ get '/signin/facebook/begin' do
 end
 
 get '/signin/facebook/finish' do
-  #raise FacebookSigninError.new "Detected a potential Cross Site Scripting Attack: no state was returned by Facebook." if !params.has_key?("state")
-  #raise FacebookSigninError.new "Detected a potential Cross Site Scripting Attack: an invalid state was returned by Facebook." if !Database.validate_xsrf_token(params["state"])
+  raise FacebookSigninError.new "Detected a potential Cross Site Scripting Attack: no state was returned by Facebook." if !params.has_key?("state")
+  raise FacebookSigninError.new "Detected a potential Cross Site Scripting Attack: an invalid state was returned by Facebook." if !Database::XSRFTokens.validate_xsrf_token(params["state"])
 
   if params.has_key?("error")
     if params["error_reason"] = "user_denied"
@@ -47,7 +47,7 @@ get '/signin/facebook/finish' do
   facebook_id = info["bio"]["id"]
 
   #look up the user to see if they already exist
-  profile = Database.find_user_profile_by_facebook_id(facebook_id)
+  profile = Database::UserProfiles.find_user_profile_by_facebook_id(facebook_id)
   
   if profile.nil? 
     profile = UserProfile.new
@@ -61,17 +61,17 @@ get '/signin/facebook/finish' do
     profile.facebook_id = facebook_id
     profile.facebook_token = token
 
-    Database.save_user_profile(profile)
+    Database::UserProfiles.save_user_profile(profile)
   end
   
   #facebook can give us a new token at their leisure. We should use the new one if it was changed.
   if profile.facebook_token != token
     profile.facebook_token = token
-    Database.save_user_profile(profile)
+    Database::UserProfiles.save_user_profile(profile)
   end
 
   #create a user session for the user now that they've either signed or or created a new profile
-  session_token = Database.create_user_session profile
+  session_token = Database::UserSessions.create_user_session profile
   
   max_age_seconds = 59 * 24 * 60 * 60 #59 days, one day less than the session will expire in the database
   expires = Time.now + max_age_seconds

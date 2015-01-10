@@ -20,6 +20,6 @@ $config = YAML::load(File.open("secrets.yaml"))
 use Rack::Throttle::Hourly, :max => 3000
 # helpers Sinatra::ContentFor2
 
-require './app.rb'
+require './routes/app.rb'
 
 run Sinatra::Application
