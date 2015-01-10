@@ -9,7 +9,7 @@ module Database
 
     def self.list_all_sessions
       query = "select * from #{Database::SDB.build_domain("sessions")}"
-      data = Database::SDB.get_database_client.select(select_expression: query)
+      data = Database::SDB.select(query)
       sessions = []
       data.each do |page|
         sessions.concat(page.data.items.map do |item|
@@ -25,7 +25,7 @@ module Database
 
     def self.list_all_xsrf_tokens
       query = "select * from #{Database::SDB.build_domain("xsrf_tokens")}"
-      data = Database::SDB.get_database_client.select(select_expression: query)
+      data = Database::SDB.select(query)
       tokens = []
       data.each do |page|
         tokens.concat(page.data.items.map do |item|
@@ -39,7 +39,7 @@ module Database
       tokens
     end
 
-    def self.delete_all_profiles
+    def self.delete_all_user_profiles
       profiles = Database::UserProfiles.list_user_profiles
       Database::SDB.delete_items('profiles', profiles.map { |p| p.user_id })
     end

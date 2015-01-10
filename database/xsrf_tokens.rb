@@ -27,11 +27,10 @@ module Database
         cleanup_xsrf_tokens
         now = Time.now.getutc.to_i
 
-        sdb = SDB.get_database_client
         query = "select token from #{SDB.build_domain('xsrf_tokens')} where token = '#{token}' and expires >= '#{now}' "
         query = query + " and action_type = '#{action_type}' " if not action_type.nil? 
 
-        data = sdb.select(select_expression: query).data
+        data = SDB.select(query).data
         found = (data.items.count > 0)
 
         SDB.delete_items('xsrf_tokens', token) if found

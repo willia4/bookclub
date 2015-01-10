@@ -28,9 +28,8 @@ module Database
       cleanup_user_sessions
       now = Time.now.getutc.to_i
 
-      sdb = SDB.get_database_client
       query = "select user_id from #{SDB.build_domain("sessions")} where session_token = '#{session_token}' and expires >= '#{now}'"
-      items = sdb.select(select_expression: query).data.items
+      items = SDB.select(query).data.items
       item = items.count > 0 ? items[0] : nil
       return nil if item.nil?
       

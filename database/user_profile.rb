@@ -39,7 +39,7 @@ module Database
 
     def self.count_user_profiles
       query = "select count(*) from #{SDB.build_domain("profiles")}"
-      data = SDB.get_database_client.select(select_expression: query)
+      data = SDB.select(query)
 
       if data 
         return (data.items[0].attributes.select {|a| a.name = "Count"})[0].value.to_i
@@ -50,7 +50,7 @@ module Database
 
     def self.list_user_profiles
       query = "select * from #{SDB.build_domain("profiles")}"
-      data = SDB.get_database_client.select(select_expression: query)
+      data = SDB.select(query)
 
       profiles = []
       data.each do |page|

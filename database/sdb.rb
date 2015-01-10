@@ -15,7 +15,11 @@ module Database
       return $sdb_client
     end
 
-    def self.find_attribute attributes, key
+    def self.select(query)
+      return get_database_client.select(select_expression: query, consistent_read: true)
+    end
+
+    def self.find_attribute(attributes, key)
       #support someone passing in the item instead of the item's attributes
       if attributes.respond_to? "attributes"
         attributes = attributes.attributes
@@ -70,7 +74,7 @@ module Database
       attribute_value = attribute_value.to_s 
 
       query = "select * from #{SDB.build_domain(domain_name)} where #{attribute_name} = '#{attribute_value}'"
-      data = sdb.select(select_expression: query)
+      data = select(query)
       item = nil
 
       data.each do |page|
@@ -89,7 +93,7 @@ module Database
       query = "select itemName() from #{domain} where expires <= '#{now}'"
 
       items_to_delete = []
-      data = get_database_client.select(select_expression: query)
+      data = select(query)
       data.each do |page|
         items_to_delete.concat(page.data.items.map { |i| i.name })
       end
