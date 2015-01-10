@@ -5,7 +5,7 @@ require 'json'
 require './exceptions/AppError.rb'
 require './database/database.rb'
 require './facebook.rb'
-require './user_profile.rb'
+require './models/user_profile.rb'
 
 class FacebookSigninError < AppError
   def initialize(reason)
@@ -50,7 +50,7 @@ get '/signin/facebook/finish' do
   profile = Database::UserProfiles.find_user_profile_by_facebook_id(facebook_id)
   
   if profile.nil? 
-    profile = UserProfile.new
+    profile = Models::UserProfile.new
     profile.user_status = "unconfirmed"
 
     profile.full_name = info["bio"]["name"]

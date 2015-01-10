@@ -1,6 +1,6 @@
 require 'securerandom'
 require './database/sdb.rb'
-require './user_profile.rb'
+require './models/user_profile.rb'
 
 module Database
   module UserSessions

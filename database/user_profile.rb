@@ -1,6 +1,6 @@
 require 'securerandom'
 require './database/sdb.rb'
-require './user_profile.rb'
+require './models/user_profile.rb'
 
 module Database
   module UserProfiles
@@ -17,7 +17,7 @@ module Database
     def self.save_user_profile profile 
       profile.user_id = SecureRandom.hex(16) if (profile.user_id.nil? || profile.user_id == "")
 
-      attributes = UserProfile.profile_properties.map do |p|
+      attributes = Models::UserProfile.profile_properties.map do |p|
         value = profile.send(p).to_s
         { name: p, value: value, replace: true}
       end
@@ -59,9 +59,9 @@ module Database
     def self.build_profile_from_sdb_item item
       return nil if item.nil? 
 
-      profile = UserProfile.new
+      profile = Models::UserProfile.new
 
-      UserProfile.profile_properties.each do |p|
+      Models::UserProfile.profile_properties.each do |p|
         value = SDB.find_attribute(item, p).to_s
         method = p + "="
         profile.send(method, value)
