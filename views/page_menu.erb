@@ -29,14 +29,20 @@
 		</ul>
 
 	<% else %>
+		<!--
 		<ul class="nav navbar-nav navbar-right">
 			<li class="dropdown" id="nav-signin-dropdown">
 				<a class="dropdown-toggle" href="#" data-toggle="dropdown">Sign in</a>
 				<div class="dropdown-menu">
 					<a id="button-facebook-signin" href="/signin/facebook/begin"><img src="/images/facebook_signin.png"></img></a>
-					<a id="button-google-signin" href="#"><img src="/images/google_signin.png"></img></a>
+					<% #<a id="button-google-signin" href="#"><img src="/images/google_signin.png"></img></a> %>
 				</div>
 			</li>
+		</ul>
+		-->
+
+		<ul class="nav navbar-nav navbar-right" id="nav-signin-dropdown">
+			<li><a id="button-facebook-signin" href="/signin/facebook/begin"><img src="/images/facebook_signin.png"></img></a></li>
 		</ul>
 	<% end %>
 	</div>
