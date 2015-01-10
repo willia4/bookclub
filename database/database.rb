@@ -1,6 +1,7 @@
 require 'securerandom'
 
 require './database/sdb.rb'
+require './database/s3.rb'
 require './database/debug.rb'
 require './database/xsrf_tokens.rb'
 require './database/user_sessions.rb'

@@ -34,9 +34,7 @@ end
 before do
   @session_state = {
     :logged_in => false,
-    :user_id => nil,
-    :user_name => nil,
-    :avatar => "images/empty_avatar.png",
+    :user_profile => nil,
     :show_admin => false
   }
 
@@ -48,6 +46,19 @@ before do
       @session_state[:user_profile] = profile
       @session_state[:show_admin] = (profile.user_status == "admin")
     end
+  end
+end
+
+get '*' do
+  # if the user is trying to login, don't tell them they aren't logged in. They know.
+  pass if request.path_info.start_with?("/signin")
+
+  if !@session_state[:logged_in]
+    erb :logged_out
+  elsif @session_state[:user_profile].user_status == "unconfirmed"
+    erb :unconfirmed_user
+  else 
+    pass
   end
 end
 

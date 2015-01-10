@@ -106,7 +106,7 @@ module APIs
                         "type" => "large",
                         "redirect" => false
                       }
-      return {"bio" => bio, "photo" => photo["url"]}
+      return {"bio" => bio, "photo" => photo["data"]["url"]}
     end
   end
 end

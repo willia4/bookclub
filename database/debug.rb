@@ -24,7 +24,7 @@ module Database
     end
 
     def self.delete_all_profiles
-      profiles = Database.list_user_profiles
+      profiles = Database::UserProfiles.list_user_profiles
       Database::SDB.delete_items('profiles', profiles.map { |p| p.user_id })
     end
   end

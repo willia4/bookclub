@@ -58,6 +58,10 @@ get '/signin/facebook/finish' do
     profile.email = info["bio"]["email"]
     profile.avatar_url = nil
 
+    if !info["photo"].nil? && info["photo"] != ""
+      profile.avatar_url = Database::S3.upload_url(info["photo"])
+    end
+
     profile.facebook_id = facebook_id
     profile.facebook_token = token
 
