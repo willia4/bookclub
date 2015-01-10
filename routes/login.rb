@@ -4,7 +4,7 @@ require 'json'
 
 require './exceptions/AppError.rb'
 require './database/database.rb'
-require './facebook.rb'
+require './apis/facebook.rb'
 require './models/user_profile.rb'
 
 class FacebookSigninError < AppError
@@ -15,7 +15,7 @@ end
 
 get '/signin/facebook/begin' do
   app_id = URI.encode($config[:facebook][:app_id].to_s)
-  redirect_url = URI.encode(Facebook.login_finish_redirect_url)
+  redirect_url = URI.encode(APIs::Facebook.login_finish_redirect_url)
 
   xsrf_token = Database::XSRFTokens.create_xsrf_token
   state = URI.encode(Database::XSRFTokens.create_xsrf_token)
@@ -41,8 +41,8 @@ get '/signin/facebook/finish' do
 
   #turn the Facebook code into a token
   code = URI.encode(params["code"])
-  token = Facebook.get_facebook_token_from_code code
-  info = Facebook.inspect_facebook_token token 
+  token = APIs::Facebook.get_facebook_token_from_code code
+  info = APIs::Facebook.inspect_facebook_token token 
 
   facebook_id = info["bio"]["id"]
 
