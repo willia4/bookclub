@@ -1,1 +1,6 @@
-<h1>INDEX IS GREAT</h1>
+
+<% if @session_state[:logged_in] %>
+	<h1>Hello <%= @session_state[:user_profile].casual_name %></h1>
+<% else %>
+	<h1>Logged Out</h1>
+<% end %>

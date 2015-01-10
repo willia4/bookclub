@@ -13,5 +13,11 @@ nav#main-navigation {
 			display: block;
 			margin-bottom: 15px;
 		}
+
+		#button-google-signin {
+			filter: grayscale(70%);
+			-webkit-filter: grayscale(70%);
+			opacity: 0.8;
+		}
 	}
 }

@@ -1,5 +1,6 @@
 require 'sass'
 require './database.rb'
+require './login.rb'
 
 # The sass rack plugin just won't work (it refuses to update the css if you change the .scss template and ignores its configuration and is generally horrible)
 # so this will let us at least use sass css files without having to run compass or something. 
@@ -39,11 +40,15 @@ before do
     :show_admin => false
   }
 
-  # @session_state[:logged_in] = true
-  # @session_state[:user_id] = 1
-  # @session_state[:user_name] = "James Williams"
-  # @session_state[:avatar] = "http://jameswilliams.me/avatar"
-  # @session_state[:show_admin] = false
+  session_token = request.cookies[$config[:general][:login_cookie]]
+  if !session_token.nil? && session_token != ""
+    profile = Database.validate_user_session session_token
+    if !profile.nil?
+      @session_state[:logged_in] = true
+      @session_state[:user_profile] = profile
+      @session_state[:show_admin] = (profile.user_status == "admin")
+    end
+  end
 end
 
 get '/' do
