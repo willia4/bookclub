@@ -51,6 +51,11 @@ before do
       @session_state[:session_token] = session_token
     end
   end
+
+  @page_state = {
+    :site_title => $config[:general][:site_name],
+    :page_title => $config[:general][:site_name]
+  }
 end
 
 get '*' do
@@ -59,8 +64,11 @@ get '*' do
 
   if !@session_state[:logged_in]
     status 401
+    @page_state[:page_title] = "Logged Out"
     erb :logged_out
   elsif @session_state[:user_profile].user_status == "unconfirmed"
+    @page_state[:page_title] = "Unconfirmed User"
+    status 401
     erb :unconfirmed_user
   else 
     pass

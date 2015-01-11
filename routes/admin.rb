@@ -14,6 +14,8 @@ post '/admin/*' do
 end
 
 get '/admin/moderate/users' do
+  @page_state[:page_title] = "Moderate Users"
+  
   @profiles = Database::UserProfiles.list_user_profiles.sort
 
   erb :moderate_users

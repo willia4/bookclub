@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Layout</title>
+	<% 	erb_title = @page_state[:page_title]
+		if erb_title != @page_state[:site_title]
+			erb_title = "#{erb_title} - #{@page_state[:site_title]}"
+		end
+	%>
+	<title><%= erb_title %></title>
 	<link rel="stylesheet" type="text/css" href="/stylesheets/_bootstrap.css" />
 
 	<link rel="stylesheet" type="text/css" href="/stylesheets/menu.css" />
