@@ -94,6 +94,7 @@ $(document).ready(function () {
 				$("#add-book-external-url").removeAttr("readonly")
 				$("#add-book-summary").removeAttr("readonly")
 				$("#goodreads-search-spinner").addClass("invisible");
+				$("#goodreads-search-input").removeAttr("readonly")
 			},
 			success: function (data) { 
 				$("#add-book-title").val(data.title);
@@ -108,14 +109,15 @@ $(document).ready(function () {
 				$("#add-book-external-url").removeAttr("readonly")
 				$("#add-book-summary").removeAttr("readonly")
 				$("#goodreads-search-spinner").addClass("invisible");
+				$("#goodreads-search-input").removeAttr("readonly")
 			},
 			url: '/books/goodreads/info/' + encodeURIComponent(bookId)
 		})
 	}
 
 	$("#goodreads-search-input").keypress(function (evt) {
-		if(event.which === 13) {
-			event.preventDefault();
+		if(evt.which === 13) {
+			evt.preventDefault();
 
 			$("#goodreads-search-spinner").removeClass("invisible");
 			$("#goodreads-search-input").attr("readonly", true)
@@ -140,7 +142,6 @@ $(document).ready(function () {
 						$("#goodreads-search-input").removeAttr("readonly")
 					},
 					success: function (data) {
-						console.log(data);
 						
 						$("#goodreads-search-spinner").addClass("invisible");
 						$("#goodreads-search-input").removeAttr("readonly")
@@ -152,4 +153,107 @@ $(document).ready(function () {
 			}
 		}
 	});
+
+	$("#add-book-save-button").click(function (evt) {
+		evt.preventDefault();
+		
+		var title = $("#add-book-title").val(),
+			author = $("#add-book-author").val(),
+			imageUrl = $("#add-book-image-url").val(),
+			externalUrl = $("#add-book-external-url").val(),
+			summary = $("#add-book-summary").val();
+
+		function validate() {
+			var valid = true, parser; 
+
+			$("#add-book-title-group").removeClass("has-error");
+			$("#add-book-author-group").removeClass("has-error");
+			$("#add-book-image-url-group").removeClass("has-error");
+			$("#add-book-external-url-group").removeClass("has-error");
+			$("#add-book-summary-group").removeClass("has-error");
+
+			if (!title) {
+				valid = false;
+				$("#add-book-title-group").addClass("has-error");
+			}
+			if (!author) {
+				valid = false;
+				$("#add-book-author-group").addClass("has-error");	
+			}
+
+			return valid;
+		}
+
+		if (validate()) {
+			$("#add-book-title").attr("readonly", true)
+			$("#add-book-author").attr("readonly", true)
+			$("#add-book-image-url").attr("readonly", true)
+			$("#add-book-external-url").attr("readonly", true)
+			$("#add-book-summary").attr("readonly", true)
+			$("#goodreads-search-input").attr("readonly", true)
+			$("#goodreads-search-spinner").removeClass("invisible");
+
+			$.ajax({
+				type: 'POST',
+				url: "/books/add",
+				data: {
+					title: title,
+					author: author,
+					image_url: imageUrl,
+					external_url: externalUrl,
+					summary: summary
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$("#add-book-title").removeAttr("readonly");
+					$("#add-book-author").removeAttr("readonly");
+					$("#add-book-image-url").removeAttr("readonly");
+					$("#add-book-external-url").removeAttr("readonly");
+					$("#add-book-summary").removeAttr("readonly");
+					$("#goodreads-search-input").removeAttr("readonly");
+					$("#goodreads-search-spinner").addClass("invisible");
+
+					if (jqXHR.status && jqXHR.status == 400 && jqXHR.responseText) {
+						jsonData = null; 
+						try {
+							jsonData = $.parseJSON(jqXHR.responseText);
+						} catch (e) {}
+
+						if (jsonData) {
+							if (jsonData.field) {
+								switch(jsonData.field) {
+								case "title":
+									$("#add-book-title-group").addClass("has-error");
+									break;
+								case "author":
+									$("#add-book-author-group").addClass("has-error");
+									break;
+								case "external_url":
+									$("#add-book-external-url-group").addClass("has-error");
+									break;
+								case "image_url":
+									$("#add-book-image-url-group").addClass("has-error");
+									break;
+								case "summary":
+									$("#add-book-summary-group").addClass("has-error");
+									break;
+								}
+							}
+							alert("The server reported a validation error: " + jsonData.message);
+						}
+						else {
+							alert("The server reported an error: " + jqXHR.responseText);	
+						}
+					}
+					else {
+						alert("There was an unknown error while saving. The server returned: " + errorThrown)	
+					}
+				},
+				success: function(data) {
+					//either redirect to the book url or the main url. Right now, we don't have a working book url so do the other thing. 
+					//or data.book_url when it works
+					window.location.href = data.redirect_url
+				}
+			})
+		}
+	})
 });

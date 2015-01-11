@@ -33,12 +33,29 @@ body {
 		margin-right: 15px;
 	}
 }
-.sidebar-title {
-	
-	
+
+#main-content {
+	.book-listing {
+		margin-bottom: 15px;
+		padding-top: 7px;
+		padding-bottom: 8px;
+	}
+
+	.book-listing:nth-child(even) {
+		background-color: #f7f7f7;
+	}
+
+	.book-image {
+		max-height: 100px;
+	}
+
+	.book-title {
+		font-size: 145%;
+		font-style: italic;
+		margin-bottom: 3px;
+	}
+
+	.book-author {
+		font-size: 125%;
+	}
 }
-
-.content-title{
-
-}
-

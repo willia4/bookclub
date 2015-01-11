@@ -42,7 +42,7 @@ module Database
 
       io_object = open(url)
 
-      return upload_io_object io_object, file_extension, content_type
+      return upload_io_object(io_object, file_extension, content_type)
     end
 
     def self.upload_io_object(io_object, file_extension, content_type)

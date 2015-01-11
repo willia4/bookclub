@@ -43,5 +43,10 @@ module Database
       profiles = Database::UserProfiles.list_user_profiles
       Database::SDB.delete_items('profiles', profiles.map { |p| p.user_id })
     end
+
+    def self.delete_all_books
+      books = Database::Books.list_books
+      Database::SDB.delete_items('books', books.map { |b| b.book_id })
+    end
   end
 end

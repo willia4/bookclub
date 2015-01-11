@@ -87,7 +87,7 @@ get '*' do
 end
 
 get '/' do
-  @app_state = {:foo => "bar"}
+  @unread_books = Database::Books.list_unread_books
 
 	erb :index
 end
