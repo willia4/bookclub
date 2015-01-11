@@ -1,34 +1,28 @@
-<style type="text/css">
-	.row-margin {
-		margin-top: 15px;
-	}
-</style>
-
 <div class="container">
-	<div class="row row-margin">
+	<div class="row">
 		<div class="col-xs-12">
 			<h1><%= error_state[:title] %></h1>
 		</div>
 	</div>
 	<% if error_state[:generic_error] %>
-	<div class="row row-margin">
+	<div class="row">
 		<div class="col-xs-12">
 			The requested action could not be completed. Please try again or contact an administrator. 
 		</div>
 	</div>
 	<% else %>
-	<div class="row row-margin">
+	<div class="row">
 		<div class="col-xs-12">
 			Unable to <b><%= error_state[:action] %></b>. 
 		</div>
 	</div>
-	<div class="row row-margin">
+	<div class="row">
 		<div class="col-xs-12">
 			<i><%= error_state[:reason] %></i>
 		</div>
 	</div>
 	<% end %>
-	<div class="row row-margin">
+	<div class="row">
 		<div class="col-xs-12">
 			Additional information may have been logged. The current time is: <b><%= Time.now.getutc %></b>
 		</div>
