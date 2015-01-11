@@ -12,7 +12,12 @@
 	<div id="navbarCollapse" class="collapse navbar-collapse">
 	<% if @session_state[:show_admin] %>
 		<ul class="nav navbar-nav">
-			<li><a href="#">Admin Tools</a></li>
+			<li class="dropdown" id="nav-admin-dropdown">
+				<a class="dropdown-toggle" href="#" data-toggle="dropdown">Admin Tools</a>
+				<div class="dropdown-menu">
+					<a id="button-admin-moderate-users" href="/admin/moderate/users">Moderate Users</a>
+				</div>
+			</li>
 		</ul>
 	<% end %>
 

@@ -16,5 +16,9 @@ module Models
 
     attr_accessor :facebook_id
     attr_accessor :facebook_token
+
+    def <=> other
+      return self.full_name <=> other.full_name
+    end
   end
 end

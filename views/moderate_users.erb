@@ -1,0 +1,37 @@
+<form action="" method="POST">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<table class="table">
+					<tr>
+						<th></th>
+						<th>Name/Email</th>
+						<th>Status</th>
+					</tr>
+
+					<% @profiles.each do |profile| %>
+					<tr>
+						<td><% if profile.avatar_url %>
+							<img style="max-height: 64px" src="<%= profile.avatar_url %>"/>
+							<% end %>
+						</td>
+						<td><%= profile.full_name %><br/><%= profile.email %></td>
+						<td>
+							<select name="<%=profile.user_id%>|user_status">
+								<option value="unconfirmed" <%=profile.user_status == "unconfirmed" ? "selected" : ""%>>Unconfirmed</option> 
+								<option value="confirmed" <%=profile.user_status == "confirmed" ? "selected" : ""%>>Confirmed</option>
+								<option value="admin" <%=profile.user_status == "admin" ? "selected" : ""%>>Admin</option>
+							</select>
+					</tr>
+					<% end %>
+				</table>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-12" style="text-align: right">
+				<button>Save</button>
+			</div>
+		</div>
+	</div>
+</form>
