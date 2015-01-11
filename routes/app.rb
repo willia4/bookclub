@@ -3,6 +3,7 @@ require './exceptions/AuthorizationError.rb'
 require './database/database.rb'
 require './routes/login.rb'
 require './routes/admin.rb'
+require './routes/books.rb'
 
 # The sass rack plugin just won't work (it refuses to update the css if you change the .scss template and ignores its configuration and is generally horrible)
 # so this will let us at least use sass css files without having to run compass or something. 

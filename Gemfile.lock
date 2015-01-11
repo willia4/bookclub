@@ -14,8 +14,11 @@ GEM
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
     mime-types (2.4.3)
+    mini_portile (0.6.1)
     multi_json (1.10.1)
     multi_xml (0.5.5)
+    nokogiri (1.6.5)
+      mini_portile (~> 0.6.0)
     rack (1.6.0)
     rack-protection (1.5.3)
       rack
@@ -42,6 +45,7 @@ DEPENDENCIES
   aws-sdk-core
   facets
   mail
+  nokogiri
   rack
   rack-throttle
   sass

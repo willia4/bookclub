@@ -7,5 +7,5 @@ gem 'sinatra-content-for2'
 gem 'sprockets'
 gem 'sass'
 gem 'mail'
-
+gem 'nokogiri'
 gem 'aws-sdk-core'

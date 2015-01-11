@@ -1,0 +1,26 @@
+<% content_for :extra_css do %>
+<link rel="stylesheet" type="text/css" href="/stylesheets/book_add.css" />
+<% end %>
+
+<% content_for :extra_javascript do %>
+<script src="/javascripts/book_add.js"></script>
+<% end %>
+
+<div class="container">
+	<div class="row">
+		<div class="col-xs-12 page-title"><div>Add a book</div></div>
+	</div>
+	<form class="form-horizontal">
+		<div class="form-group">
+			<label class="col-sm-2 sr-only control-label">Goodreads Search</label>
+			<div class="col-sm-10"><input class="form-control" id="goodreads-search-input" placeholder="Goodreads Search"/></div>
+		</div>
+	</form>
+
+	<form class="form-horizontal">
+		<div class="form-group">
+			<label class="col-sm-2 control-label">Title</label>
+			<div class="col-sm-10"><input class="form-control"/></div>
+		</div>
+	</form>
+<div>

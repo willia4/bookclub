@@ -12,6 +12,8 @@
 	<link rel="stylesheet" type="text/css" href="/stylesheets/menu.css" />
 	<link rel="stylesheet" type="text/css" href="/stylesheets/index.css" />
 
+	<%= yield_content :extra_css %>
+
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 </head>
 <body>
@@ -29,5 +31,7 @@
 		})();
 	</script>
 	<script src="/javascripts/bootstrap.js"></script>
+
+	<%= yield_content :extra_javascript %>
 </body>
 </html>	

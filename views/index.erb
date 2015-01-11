@@ -1,6 +1,37 @@
+<div class="container">
+	<div class="row">
+		<div class="col-xs-12 page-title"><div>Welcome to your bookclub, <%= @session_state[:user_profile].casual_name %></div></div>
+	</div>
+	<div class="row">
+		<div id="sidebar" class="col-md-4">
+			<div class="row">
+				<div class="col-xs-12 col-sm-9 sidebar-title">
+					<% if @session_state[:show_admin] %>
+					<a class="title-button" href="#"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a>
+					<% end %>
+					<div>Next Meeting</div>
+				</div>
 
-<% if @session_state[:logged_in] %>
-	<h1>Hello <%= @session_state[:user_profile].casual_name %></h1>
-<% else %>
-	<h1>Logged Out</h1>
-<% end %>
+				<div class="col-xs-0 col-sm-3"><!--spacer--></div>
+			</div>
+			<div class="row">
+				<div class="col-xs-9">January 12, 2015</div>
+				<div class="col-xs-3"></div>
+			</div>
+		</div>
+		<div id="main-content" class="col-md-8">
+			<div class="row">
+				<div class="col-xs-12 col-sm-9 content-title">
+					<a class="title-button" href="/books/add"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a>
+					<div>Nominated Books</div>
+				</div>
+				<div class="col-xs-0 col-sm-3"><!--spacer--></div>
+			</div>
+			
+			<div class="row">
+				<div class="col-sm-10 col-xs-12"></div>
+				<div class="col-sm-2 col-xs-0"></div>
+			</div>
+		</div>
+	</div>
+</div>

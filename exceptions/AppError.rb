@@ -10,7 +10,7 @@ class AppError < StandardError
     self.action = action
     self.reason = reason
     self.status_code = status_code
-    self.title = "Something went wrong generic"
+    self.title = "Something went wrong"
   end
 
 end

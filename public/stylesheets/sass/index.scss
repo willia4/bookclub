@@ -2,8 +2,39 @@ body {
 	
 }
 
-.container {
-	.row {
-		padding-bottom: 15px;
+.page-title {
+	> div {
+		font-size: 215%;
+		font-weight: bold;
+		color: #ccc;
+		margin-bottom: 15px;
 	}
 }
+
+.sidebar-title, .content-title {
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	border-bottom-color: #ccc;
+	margin-bottom: 15px;
+
+	> div {
+		display: inline-block; 
+
+		font-size: 165%;
+		font-weight: bold;
+	}
+
+	> .title-button {
+		display: inline-block;
+		margin-right: 15px;
+	}
+}
+.sidebar-title {
+	
+	
+}
+
+.content-title{
+
+}
+

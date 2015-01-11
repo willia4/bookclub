@@ -18,7 +18,7 @@ raise "Missing secrets.yaml file. This file is not tracked in source control and
 $config = YAML::load(File.open("secrets.yaml"))
 
 use Rack::Throttle::Hourly, :max => 3000
-# helpers Sinatra::ContentFor2
+helpers Sinatra::ContentFor2
 
 require './routes/app.rb'
 
