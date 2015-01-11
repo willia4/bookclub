@@ -1,4 +1,5 @@
 require 'sass'
+require './exceptions/AuthorizationError.rb'
 require './database/database.rb'
 require './routes/login.rb'
 require './routes/admin.rb'
@@ -57,6 +58,7 @@ get '*' do
   pass if request.path_info.start_with?("/signin")
 
   if !@session_state[:logged_in]
+    status 401
     erb :logged_out
   elsif @session_state[:user_profile].user_status == "unconfirmed"
     erb :unconfirmed_user
@@ -76,18 +78,24 @@ error do
 
   error_state = {
     :generic_error => true,
-    :action => "Perform desired action",
-    :reason => "Please try again later"
+    :action => "perform desired action",
+    :reason => "Please try again later",
+    :title => "Something went wrong"
   }
 
-  if e.respond_to? "action" and e.respond_to? "reason"
+  if e.respond_to?("action") && e.respond_to?("reason") && e.respond_to?("title")
     error_state = {
       :generic_error => false,
       :action => e.action,
-      :reason => e.reason
+      :reason => e.reason,
+      :title => e.title
     }
   end
   
+  if e.respond_to?("status_code")
+    status e.status_code
+  end
+
   erb :error, :locals => {:error_state => error_state}
 end
 

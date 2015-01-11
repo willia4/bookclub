@@ -1,15 +1,16 @@
+require './exceptions/AuthorizationError.rb'
 require './database/database.rb'
-require 'pp'
+
 get '/admin/*' do
   pass if @session_state[:user_profile].user_status == 'admin'
 
-  halt(401, 'Unauthorized')
+  raise AuthorizationError.new("access admin area", "Only administrators may access admin functionality")
 end
 
 post '/admin/*' do
   pass if @session_state[:user_profile].user_status == 'admin'
 
-  halt(401, 'Unauthorized')
+  raise AuthorizationError.new("access admin area", "Only administrators may access admin functionality")
 end
 
 get '/admin/moderate/users' do
