@@ -6,6 +6,7 @@ require './exceptions/AppError.rb'
 require './database/database.rb'
 require './apis/facebook.rb'
 require './models/user_profile.rb'
+require './apis/email.rb'
 
 class FacebookSigninError < AppError
   def initialize(reason)
@@ -50,6 +51,8 @@ get '/signin/facebook/finish' do
   profile = Database::UserProfiles.find_user_profile_by_facebook_id(facebook_id)
   
   if profile.nil? 
+    admin_profiles = Database::UserProfiles.list_admin_user_profiles 
+
     profile = Models::UserProfile.new
     profile.user_status = "unconfirmed"
 
@@ -66,6 +69,11 @@ get '/signin/facebook/finish' do
     profile.facebook_token = token
 
     Database::UserProfiles.save_user_profile(profile)
+
+    admin_profiles.each do |admin|
+      APIs::Email.send_mail(admin.email, "A New User Has Signed Up", "#{profile.full_name} has signed up for BB Bookclub. Please moderate their account.")
+    end
+    
   end
   
   #facebook can give us a new token at their leisure. We should use the new one if it was changed.

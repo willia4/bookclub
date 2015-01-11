@@ -54,7 +54,19 @@ module Database
 
       profiles = []
       data.each do |page|
-        profiles.concat page.data.items.map {|i| build_profile_from_sdb_item i}
+        profiles.concat page.data.items.map { |i| build_profile_from_sdb_item(i) }
+      end
+
+      return profiles
+    end
+
+    def self.list_admin_user_profiles
+      query = "select * from #{SDB.build_domain("profiles")} where user_status = 'admin'"
+      data = SDB.select(query)
+
+      profiles = []
+      data.each do |page|
+        profiles.concat page.data.items.map { |i| build_profile_from_sdb_item(i) }
       end
 
       return profiles

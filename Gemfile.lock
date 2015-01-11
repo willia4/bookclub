@@ -11,6 +11,9 @@ GEM
     hike (1.2.3)
     jmespath (1.0.2)
       multi_json (~> 1.0)
+    mail (2.6.3)
+      mime-types (>= 1.16, < 3)
+    mime-types (2.4.3)
     multi_json (1.10.1)
     multi_xml (0.5.5)
     rack (1.6.0)
@@ -38,6 +41,7 @@ PLATFORMS
 DEPENDENCIES
   aws-sdk-core
   facets
+  mail
   rack
   rack-throttle
   sass

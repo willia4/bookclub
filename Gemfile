@@ -6,5 +6,6 @@ gem 'facets'
 gem 'sinatra-content-for2'
 gem 'sprockets'
 gem 'sass'
+gem 'mail'
 
 gem 'aws-sdk-core'
