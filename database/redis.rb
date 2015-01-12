@@ -12,6 +12,11 @@ module Database
       return $redis_client
     end
 
+    def self.delete_all_keys_matching_pattern(pattern)
+      redis = get_database_client
+      redis.keys(pattern).each { |key| redis.del(key) }
+    end
+
     def self.store_session(session_token, session_profile)
       key = "session:#{session_token}:user:#{session_profile.user_id}"
       json = session_profile.to_json
@@ -36,19 +41,8 @@ module Database
       return nil
     end
 
-    def self.find_session_keys_for_user_profile(profile)
-      redis = get_database_client
-
-      pattern = "session:*:user:#{profile.user_id}"
-      keys = redis.keys(pattern)
-
-      return keys || []
-    end
-
     def self.delete_sessions_for_user_profile(profile)
-      redis = get_database_client
-      keys = find_session_keys_for_user_profile(profile)
-      keys.each { |k| redis.del(k) }
+      delete_all_keys_matching_pattern("session:*:user:#{profile.user_id}")
     end
 
     def self.delete_session(session_token)
@@ -58,17 +52,25 @@ module Database
       keys.each { |k| redis.del(k) }
     end
 
+    def self.delete_all_sessions
+      delete_all_keys_matching_pattern("session:*")
+    end
+
     def self.cache_css(file_name, modified_time, css)
       redis = get_database_client
       key = "css:#{file_name}:mtime:#{modified_time}"
       redis.set(key, css)
-      redis.expire(key, 2 * 60 * 60)
+      redis.expire(key, 2 * 60 * 60) # two hours, if only because we don't want stale css hanging out taking up memory
     end
 
     def self.find_css(file_name, modified_time)
       redis = get_database_client
       key = "css:#{file_name}:mtime:#{modified_time}"
       return redis.get(key) #returns nil if not found
+    end
+
+    def self.delete_all_css
+      delete_all_keys_matching_pattern("css:*")
     end
   end
 end
