@@ -6,6 +6,8 @@ It's written in Ruby for Sinatra and relies heavily on web services (such as Ama
 
 Using pay-for-use web services is not without a cost; however, at the size of a standard book club, it will hopefully not be burdensome. 
 
+There is a dependency on redis for caching but the server is configurable so you may use something like Amazon's ElastiCache if you'd like. A micro instance of that costs about $12/mo. 
+
 # TODO
 
 * Delete Users
