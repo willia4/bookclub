@@ -1,3 +1,5 @@
+
+
 <div class="container">
 	<div class="row">
 		<div class="col-xs-12 page-title"><div>Welcome to your bookclub, <%= @session_state[:user_profile].casual_name %></div></div>
@@ -30,17 +32,28 @@
 			
 			<% @unread_books.each do |book| %>
 			<div class="row book-listing">
-				<div class="col-sm-2">
-					<% if book.image_url && !book.image_url.empty? %>
-					<img class="book-image" src="<%= book.image_url %>" />
-					<% end %>
-				</div>
-				<div class="col-sm-offset-1 col-sm-9">
+				<div class="col-sm-12">
 					<div class="row">
-						<div class="col-xs-12 book-title"><%= book.title %></div>
+						<div class="col-sm-2">
+							<% if book.image_url && !book.image_url.empty? %>
+							<img class="book-image" src="<%= book.image_url %>" />
+							<% end %>
+						</div>
+						<div class="col-sm-offset-1 col-sm-9">
+							<div class="row">
+								<div class="col-xs-12 book-title"><%= book.title %></div>
+							</div>
+							<div class="row">
+								<div class="col-xs-12 book-author"><%= book.author %></div>
+							</div>
+						</div>
 					</div>
 					<div class="row">
-						<div class="col-xs-12 book-author"><%= book.author %></div>
+						<% date_added = Time.parse(book.date_added).getlocal
+						  today = Time.now.getlocal %>
+						<div class="col-sm-offset-7 col-sm-5 book-date-added" title="<%= date_added.strftime("%Y-%b-%d @ %I:%M%P %Z") %>">
+							Added <%= (date_added.year == today.year && date_added.month == today.month && date_added.day == today.day) ? "today" : book.age + " ago" %>
+						</div>
 					</div>
 				</div>
 			</div>

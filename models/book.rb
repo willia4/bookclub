@@ -1,3 +1,6 @@
+require 'action_view' 
+include ActionView::Helpers::DateHelper
+
 module Models
   class Book
     def self.sdb_properties
@@ -36,6 +39,10 @@ module Models
 
     def date_added
       @date_added.getutc.to_s
+    end
+
+    def age
+      time_ago_in_words(@date_added)
     end
 
     def initialize
