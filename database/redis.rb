@@ -58,5 +58,17 @@ module Database
       keys.each { |k| redis.del(k) }
     end
 
+    def self.cache_css(file_name, modified_time, css)
+      redis = get_database_client
+      key = "css:#{file_name}:mtime:#{modified_time}"
+      redis.set(key, css)
+      redis.expire(key, 2 * 60 * 60)
+    end
+
+    def self.find_css(file_name, modified_time)
+      redis = get_database_client
+      key = "css:#{file_name}:mtime:#{modified_time}"
+      return redis.get(key) #returns nil if not found
+    end
   end
 end
