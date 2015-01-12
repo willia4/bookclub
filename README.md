@@ -8,6 +8,10 @@ Using pay-for-use web services is not without a cost; however, at the size of a 
 
 There is a dependency on redis for caching but the server is configurable so you may use something like Amazon's ElastiCache if you'd like. A micro instance of that costs about $12/mo. 
 
+# Configuration
+This project is missing a secrets.yaml file which contains configuration information. When the configuration is more stable, I'll add a secrets.sample.yaml file to show the shape of it. 
+For now, email the maintainer to get a current sample.
+
 # TODO
 
 * Delete Users
