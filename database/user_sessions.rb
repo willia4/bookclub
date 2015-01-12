@@ -1,5 +1,6 @@
 require 'securerandom'
 require './database/sdb.rb'
+require './database/redis.rb'
 require './models/user_profile.rb'
 
 module Database
@@ -19,11 +20,17 @@ module Database
       sdb = SDB.get_database_client
       sdb.put_attributes(domain_name: SDB.build_domain("sessions"), item_name: session_token, attributes: attributes)
 
+      Redis.store_session(session_token, profile)
+
       return session_token
     end
 
     # Returns a profile if the session is valid or nil if it is not
     def self.validate_user_session session_token
+      #check redis first 
+      profile = Redis.find_user_profile_for_session(session_token)
+      return profile if profile 
+
       #clean up when validating just to keep the domain tidy
       cleanup_user_sessions
       now = Time.now.getutc.to_i
@@ -37,11 +44,16 @@ module Database
       return nil if user_id.nil? 
 
       profile = Database::UserProfiles.find_user_profile_by_user_id(user_id)
+
+      #if we found the session in SDB, we should save it in redis for next time 
+      Redis.store_session(session_token, profile)
+
       return profile
     end
 
     def self.delete_user_session session_token
       Database::SDB.delete_items("sessions", session_token)
+      Redis.delete_session(session_token)
     end
 
     def self.cleanup_user_sessions

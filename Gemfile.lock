@@ -27,6 +27,7 @@ GEM
       rack
     rack-throttle (0.4.0)
       rack (>= 1.0.0)
+    redis (3.2.0)
     sanitize (3.1.0)
       crass (~> 1.0.1)
       nokogiri (>= 1.4.4)
@@ -55,6 +56,7 @@ DEPENDENCIES
   nokogiri
   rack
   rack-throttle
+  redis
   sanitize
   sass
   sinatra

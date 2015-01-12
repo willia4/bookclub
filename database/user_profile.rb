@@ -1,5 +1,6 @@
 require 'securerandom'
 require './database/sdb.rb'
+require './database/redis.rb'
 require './models/user_profile.rb'
 
 module Database
@@ -29,12 +30,18 @@ module Database
       SDB.get_database_client.put_attributes( domain_name: SDB.build_domain("profiles"),
                         item_name: profile.user_id,
                         attributes: attributes)
+
+      #cached profiles will be stale, so delete them from redis
+      Redis.delete_sessions_for_user_profile(profile)
     end
 
     def self.delete_user_profile profile 
       #take either a user_id or a profile object 
       user_id = profile.respond_to?('user_id') ? profile.user_id : profile
       SDB.delete_items("profiles", user_id)
+
+      #cached profiles are now invalid
+      Redis.delete_sessions_for_user_profile(profile)
     end
 
     def self.count_user_profiles
