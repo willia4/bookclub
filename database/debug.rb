@@ -48,6 +48,7 @@ module Database
 
     def self.delete_all_books
       books = Database::Books.list_books
+      Redis.delete_all_books
       Database::SDB.delete_items('books', books.map { |b| b.book_id })
     end
 

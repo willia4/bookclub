@@ -48,5 +48,29 @@ module Models
     def <=> other
       return self.title <=> other.title
     end
+
+    def to_json
+      h = {}
+      Book.sdb_properties.each do |p|
+        h[p] = self.send(p)
+      end
+
+      h.to_json
+    end
+
+    def self.from_json(json_string)
+      r = Book.new
+      h = JSON.parse(json_string)
+
+      Book.sdb_properties.each do |p|
+        raise "Invalid JSON for Modules::Book" if not h.keys.include?(p)
+
+        method_name = p + "="
+        
+        r.send(method_name, h[p])
+      end
+
+      return r
+    end
   end
 end

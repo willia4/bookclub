@@ -1,4 +1,5 @@
 require './models/user_profile.rb'
+require './models/book.rb'
 require 'redis'
 
 module Database
@@ -54,6 +55,29 @@ module Database
 
     def self.delete_all_sessions
       delete_all_keys_matching_pattern("session:*")
+    end
+
+    def self.store_book(book)
+      redis = get_database_client
+      key = "book:#{book.book_id}"
+      redis.set(key, book.to_json)
+      redis.expire(key, 2 * 60 * 60)
+    end
+
+    def self.find_book_by_book_id(book_id)
+      redis = get_database_client
+      json = redis.get("book:#{book_id}")
+      return nil if json.nil? 
+      return Models::Book.from_json(json)
+    end
+
+    def self.delete_book_id(book_id)
+      redis = get_database_client
+      redis.del("book:#{book_id}")
+    end
+
+    def self.delete_all_books
+      delete_all_keys_matching_pattern("book:*")
     end
 
     def self.cache_css(file_name, modified_time, css)

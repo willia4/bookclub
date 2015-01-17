@@ -1,5 +1,6 @@
 require 'securerandom'
 require './database/database.rb'
+require './database/redis.rb'
 require './models/book.rb'
 
 module Database
@@ -14,6 +15,7 @@ module Database
         {name: p, value: value, replace: true}
       end
 
+      Redis.delete_book_id(book.book_id)
       SDB.get_database_client.put_attributes(domain_name: SDB.build_domain("books"), 
                                             item_name: book.book_id,
                                             attributes: attributes)
@@ -22,6 +24,7 @@ module Database
     def self.delete_book book
       book = book.book_id if book.respond_to?("book_id")
 
+      Redis.delete_book_id(book)
       SDB.delete_items('books', book)
     end
 
@@ -38,10 +41,15 @@ module Database
     end
 
     def self.find_book_by_book_id(book_id)
+      book = Redis.find_book_by_book_id(book_id)
+      return book if !book.nil?
+
       item = Database::SDB.find_first_item_by_attribute("books", "book_id", book_id)
       return nil if item.nil?
 
-      return build_book_from_sdb_item(item)
+      book = build_book_from_sdb_item(item)
+      Redis.store_book(book)
+      return book
     end
 
     def self.list_books_from_sdb_query query
