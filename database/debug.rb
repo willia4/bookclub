@@ -1,10 +1,12 @@
 require './database/sdb.rb'
+require './database/redis.rb'
 
 module Database
   module Debug
     def self.delete_all_sessions
       sessions = list_all_sessions
       Database::SDB.delete_items('sessions', sessions.map { |s| s[:session_token] })
+      Database::Redis.delete_all_sessions
     end
 
     def self.list_all_sessions
