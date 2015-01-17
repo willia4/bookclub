@@ -1,9 +1,6 @@
 require 'sass'
 require './exceptions/AuthorizationError.rb'
 require './database/database.rb'
-require './routes/login.rb'
-require './routes/admin.rb'
-require './routes/books.rb'
 require './routes/assets.rb'
 
 configure do 
@@ -35,22 +32,28 @@ before do
   }
 end
 
-get '*' do
-  # if the user is trying to login, don't tell them they aren't logged in. They know.
-  pass if request.path_info.start_with?("/signin")
+[:get, :post, :delete].each do |method|
+  send method, '*' do
+    # if the user is trying to login, don't tell them they aren't logged in. They know.
+    pass if request.path_info.start_with?("/signin")
 
-  if !@session_state[:logged_in]
-    status 401
-    @page_state[:page_title] = "Logged Out"
-    erb :logged_out
-  elsif @session_state[:user_profile].user_status == "unconfirmed"
-    @page_state[:page_title] = "Unconfirmed User"
-    status 401
-    erb :unconfirmed_user
-  else 
-    pass
+    if !@session_state[:logged_in]
+      status 401
+      @page_state[:page_title] = "Logged Out"
+      erb :logged_out
+    elsif @session_state[:user_profile].user_status == "unconfirmed"
+      @page_state[:page_title] = "Unconfirmed User"
+      status 401
+      erb :unconfirmed_user
+    else 
+      pass
+    end
   end
 end
+
+require './routes/login.rb'
+require './routes/admin.rb'
+require './routes/books.rb'
 
 get '/' do
   @unread_books = Database::Books.list_unread_books
