@@ -14,18 +14,48 @@
 			<div class="row">
 				<div class="col-xs-12 col-sm-9 sidebar-title">
 					<% if @session_state[:show_admin] %>
-					<a class="title-button" href="#"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a>
+					<a class="title-button" href="/meetings/add"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a>
 					<% end %>
-					<div>Next Meeting</div>
+					<div>Meetings</div>
 				</div>
 
 				<div class="col-xs-0 col-sm-3"><!--spacer--></div>
 			</div>
-			<div class="row">
-				<div class="col-xs-9">January 12, 2015</div>
-				<div class="col-xs-3"></div>
-			</div>
+			
+			<ul class="meeting-list">
+				<% @future_meetings.each do |m_hash| 
+					meeting = m_hash[:meeting]
+					selected_book = m_hash[:selected_book]
+					nominated_books = m_hash[:nominated_books]
+					%>
+
+					<li class="row meeting">
+						<div class="col-sm-12">
+							<div class="row">
+								<div class="col-sm-12 meeting-date">
+									<a href="/meetings/meeting/<%= meeting.meeting_id %>"><%= meeting.date.strftime("%A - %b %d, %Y") %></a>
+								</div>
+							</div>
+							<% if selected_book.nil? %>
+							<div class="row">
+								<div class="col-sm-12">Open Voting</div>
+							</div>
+							<div class="row">
+								<ul>
+									<% nominated_books.each do |b| %>
+									<li><i><%= b.title %></i></li>
+									<% end %>
+								</ul>
+							</div>
+							<% else %>
+
+							<% end %>
+						</div>
+					</li>
+				<% end %>		
+			</ul>
 		</div>
+
 		<div id="main-content" class="col-md-8">
 			<div class="row">
 				<div class="col-xs-12 col-sm-9 content-title">
@@ -38,20 +68,7 @@
 			<ul class="book-list">
 				<% @unread_books.each do |book| %>
 				<li class="row book-listing" data-id="<%= book.book_id %>">
-					<div class="col-sm-1" style="font-size: 125%;">
-						<div class="row">
-							<div class="col-xs-12" style="text-align:center; font-weight: bold;">
-								<span class="glyphicon glyphicon-arrow-up"></span>
-							</div>
-						</div>
-						<div class="row"><div class="col-xs-12" style="text-align:center">0</div></div>
-						<div class="row">
-							<div class="col-xs-12" style="text-align:center">
-								<span class="glyphicon glyphicon-arrow-down"></span>
-							</div>
-						</div>
-					</div>
-					<div class="col-sm-11">
+					<div class="col-sm-12">
 						<div class="row">
 							<div class="col-sm-2">
 								<% if book.image_url && !book.image_url.empty? %>

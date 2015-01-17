@@ -50,5 +50,36 @@ module Database
       books = Database::Books.list_books
       Database::SDB.delete_items('books', books.map { |b| b.book_id })
     end
+
+    def self.delete_all_meetings
+      meetings = Database::Meetings.list_meetings
+      Database::SDB.delete_items('meetings', meetings.map { |m| m.meeting_id })
+    end
+
+    def self.delete_all_votes
+      data = Database::SDB.select("select * from #{SDB.build_domain("votes")}")
+      keys = []
+      data.each do |page|
+        keys.concat(page.data.items.map {|i| i.name })
+      end
+      Database::SDB.delete_items('votes', keys)
+    end
+
+    def self.list_all_votes
+      data = Database::SDB.select("select * from #{SDB.build_domain("votes")}")
+      votes = []
+      data.each do |page|
+        votes.concat(page.data.items.map do |i|
+            {
+              :itemName => i.name,
+              :meeting_id => SDB.find_attribute(i, "meeting_id"),
+              :book_id => SDB.find_attribute(i, "book_id"),
+              :user_profile_id => SDB.find_attribute(i, "user_profile_id"),
+              :vote => SDB.find_attribute(i, "vote").to_i
+            }
+        end)
+      end
+      return votes
+    end
   end
 end

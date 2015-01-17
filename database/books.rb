@@ -37,6 +37,13 @@ module Database
       return list_books_from_sdb_query("select * from #{SDB.build_domain("books")} where read = 'true'")
     end
 
+    def self.find_book_by_book_id(book_id)
+      item = Database::SDB.find_first_item_by_attribute("books", "book_id", book_id)
+      return nil if item.nil?
+
+      return build_book_from_sdb_item(item)
+    end
+
     def self.list_books_from_sdb_query query
       data = SDB.select(query)
 

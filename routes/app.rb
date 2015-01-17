@@ -54,9 +54,18 @@ end
 require './routes/login.rb'
 require './routes/admin.rb'
 require './routes/books.rb'
+require './routes/meetings.rb'
 
 get '/' do
   @unread_books = Database::Books.list_unread_books
+  @future_meetings = (Database::Meetings.list_future_meetings.sort_by { |m| m.date }).map do |m|
+    selected_book = (m.selected_book_id.nil? || m.selected_book_id == "") ? nil : Database::Books.find_book_by_id(m.selected_book_id)
+
+    nominated_books = selected_book.nil? ? m.nominated_book_ids.map { |b| Database::Books.find_book_by_book_id(b) } : nil
+    nominated_books = nominated_books.nil? ? nil : nominated_books.shuffle
+
+    {:meeting => m, :selected_book => selected_book, :nominated_books => nominated_books}
+  end
 
 	erb :index
 end

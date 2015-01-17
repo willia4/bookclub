@@ -4,7 +4,7 @@ include ActionView::Helpers::DateHelper
 module Models
   class Book
     def self.sdb_properties
-      ["book_id", "title", "author", "summary", "image_url", "external_url", "read", "votes", "date_added"]
+      ["book_id", "title", "author", "summary", "image_url", "external_url", "read", "date_added"]
     end
 
     attr_accessor :book_id
@@ -15,13 +15,9 @@ module Models
     attr_accessor :external_url
     attr_accessor :read
 
-    def votes=(votes)
-      @votes = votes.to_i
-    end
-
-    def votes
-      @votes
-    end
+    #these are not filled in when loading a book but are there for the convenience of other methods
+    attr_accessor :votes
+    attr_accessor :user_vote
 
     def read=(read)
       @read = ((read == "true") || (read == "yes"))
@@ -46,7 +42,6 @@ module Models
     end
 
     def initialize
-      self.votes = 0
       @date_added = Time.now
     end
 

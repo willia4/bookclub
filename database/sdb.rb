@@ -1,3 +1,4 @@
+require 'securerandom'
 require 'aws-sdk-core'
 
 module Database
@@ -99,6 +100,32 @@ module Database
       end
 
       delete_items(domain, items_to_delete)
+    end
+
+    def self.save_simple_model(domain, model, id_property, property_names)
+      id = model.send(id_property)
+      if id.nil? || id == "" 
+        id = SecureRandom.hex(16)
+        model.send(id_property + "=", id)
+      end
+
+      attributes = property_names.map do |p|
+        value = model.send(p).to_s
+        {name: p, value: value, replace: true}
+      end
+
+      get_database_client.put_attributes(domain_name: SDB.build_domain(domain), 
+                                          item_name: id,
+                                          attributes: attributes)
+    end
+
+    def self.load_simple_model(model, item, id_property, property_names)
+      property_names.each do |p|
+        value = find_attribute(item, p)
+        model.send(p + "=", value)
+      end
+
+      return model
     end
   end
 end
