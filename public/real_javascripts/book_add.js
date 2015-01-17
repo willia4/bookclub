@@ -140,6 +140,8 @@ $(document).ready(function () {
 					error: function (jqXHR, textStatus, errorThrown) {
 						$("#goodreads-search-spinner").addClass("invisible");
 						$("#goodreads-search-input").removeAttr("readonly")
+
+						alert("Unable to perform search: " + errorThrown);
 					},
 					success: function (data) {
 						
