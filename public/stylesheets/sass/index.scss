@@ -35,6 +35,18 @@ body {
 }
 
 #main-content {
+	ul.book-list {
+		list-style: none;
+		list-style-type: none;
+		padding: 0;
+		margin: 0;
+
+		li {
+			list-style: none;
+			list-style-type: none;			
+		}
+	}
+
 	.book-listing {
 		margin-bottom: 15px;
 		padding-top: 7px;
@@ -46,11 +58,11 @@ body {
 		border-radius: 5px;
 	}
 
-	.book-listing:nth-child(even) {
+	.book-listing:nth-child(odd) {
 		background-color: #f5f5f5;
 	}
 
-	.book-listing:nth-child(odd) {
+	.book-listing:nth-child(even) {
 		background-color: #fdfdfd;
 	}
 

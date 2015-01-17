@@ -1,4 +1,9 @@
-
+<% content_for :extra_javascript do %>
+<script src="/javascripts/jquery.easing.1.3.js"></script>
+<script src="/javascripts/jquery-css-transform.js"></script>
+<script src="/javascripts/jquery.quicksand.js"></script>
+<script src="/javascripts/index_books.js"></script>
+<% end %>
 
 <div class="container">
 	<div class="row">
@@ -30,34 +35,49 @@
 				<div class="col-xs-0 col-sm-3"><!--spacer--></div>
 			</div>
 			
-			<% @unread_books.each do |book| %>
-			<div class="row book-listing">
-				<div class="col-sm-12">
-					<div class="row">
-						<div class="col-sm-2">
-							<% if book.image_url && !book.image_url.empty? %>
-							<img class="book-image" src="<%= book.image_url %>" />
-							<% end %>
-						</div>
-						<div class="col-sm-offset-1 col-sm-9">
-							<div class="row">
-								<div class="col-xs-12 book-title"><%= book.title %></div>
+			<ul class="book-list">
+				<% @unread_books.each do |book| %>
+				<li class="row book-listing" data-id="<%= book.book_id %>">
+					<div class="col-sm-1" style="font-size: 125%;">
+						<div class="row">
+							<div class="col-xs-12" style="text-align:center; font-weight: bold;">
+								<span class="glyphicon glyphicon-arrow-up"></span>
 							</div>
-							<div class="row">
-								<div class="col-xs-12 book-author"><%= book.author %></div>
+						</div>
+						<div class="row"><div class="col-xs-12" style="text-align:center">0</div></div>
+						<div class="row">
+							<div class="col-xs-12" style="text-align:center">
+								<span class="glyphicon glyphicon-arrow-down"></span>
 							</div>
 						</div>
 					</div>
-					<div class="row">
-						<% date_added = Time.parse(book.date_added).getlocal
-						  today = Time.now.getlocal %>
-						<div class="col-sm-offset-7 col-sm-5 book-date-added" title="<%= date_added.strftime("%Y-%b-%d @ %I:%M%P %Z") %>">
-							Added <%= (date_added.year == today.year && date_added.month == today.month && date_added.day == today.day) ? "today" : book.age + " ago" %>
+					<div class="col-sm-11">
+						<div class="row">
+							<div class="col-sm-2">
+								<% if book.image_url && !book.image_url.empty? %>
+								<img class="book-image" src="<%= book.image_url %>" />
+								<% end %>
+							</div>
+							<div class="col-sm-offset-1 col-sm-9">
+								<div class="row">
+									<div class="col-xs-12 book-title"><%= book.title %></div>
+								</div>
+								<div class="row">
+									<div class="col-xs-12 book-author"><%= book.author %></div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<% date_added = Time.parse(book.date_added).getlocal
+							  today = Time.now.getlocal %>
+							<div class="col-sm-offset-7 col-sm-5 book-date-added" title="<%= date_added.strftime("%Y-%b-%d @ %I:%M%P %Z") %>">
+								Added <%= (date_added.year == today.year && date_added.month == today.month && date_added.day == today.day) ? "today" : book.age + " ago" %>
+							</div>
 						</div>
 					</div>
-				</div>
-			</div>
-			<% end %>
+				</li>
+				<% end %>
+			</ul>
 			<div class="row">
 				<div class="col-sm-10 col-xs-12"></div>
 				<div class="col-sm-2 col-xs-0"></div>

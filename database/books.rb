@@ -1,5 +1,6 @@
 require 'securerandom'
 require './database/database.rb'
+require './models/book.rb'
 
 module Database
   module Books
