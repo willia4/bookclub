@@ -44,6 +44,9 @@ module Database
     end
 
     def self.find_votes_for_meeting(meeting_id)
+      votes = Redis.find_votes_for_meeting(meeting_id)
+      return votes if !votes.nil?
+
       query = "select * from #{SDB.build_domain("votes")} where meeting_id = '#{meeting_id}'"
       data = SDB.select(query)
 
@@ -59,6 +62,7 @@ module Database
         end)
       end
 
+      Redis.store_votes_for_meeting(meeting_id, votes)
       return votes
     end
 
@@ -69,6 +73,7 @@ module Database
                       {name: "user_profile_id", value: user_profile_id, replace: true},
                       {name: "vote", value: vote.to_s, replace: true}]
 
+      Redis.delete_votes_for_meeting(meeting_id)
       SDB.get_database_client.put_attributes(domain_name: SDB.build_domain("votes"), item_name: item_name, attributes: attributes)
     end
   end

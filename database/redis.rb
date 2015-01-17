@@ -1,6 +1,7 @@
 require './models/user_profile.rb'
 require './models/book.rb'
 require 'redis'
+require 'json'
 
 module Database
   module Redis
@@ -78,6 +79,32 @@ module Database
 
     def self.delete_all_books
       delete_all_keys_matching_pattern("book:*")
+    end
+
+    # votes should be an array of hashes
+    def self.store_votes_for_meeting(meeting_id, votes)
+      redis = get_database_client
+      key = "votes:#{meeting_id}"
+      votes = JSON.generate(votes)
+      redis.set(key, votes)
+      redis.expire(key, 2 * 60 * 60)
+    end
+
+    def self.find_votes_for_meeting(meeting_id)
+      redis = get_database_client
+      key = "votes:#{meeting_id}"
+      votes = redis.get(key)
+      return nil if votes.nil?
+      return JSON.parse(votes)
+    end
+
+    def self.delete_votes_for_meeting(meeting_id)
+      key = "votes:#{meeting_id}"
+      get_database_client.del(key)
+    end
+
+    def self.delete_all_votes
+      delete_all_keys_matching_pattern("votes:*")
     end
 
     def self.cache_css(file_name, modified_time, css)
