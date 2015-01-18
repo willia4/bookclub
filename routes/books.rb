@@ -50,7 +50,8 @@ post '/books/add' do
   book.title = title 
   book.author = author
   book.external_url = external_url
-
+  book.summary = summary 
+  
   if !image_url.nil? && !image_url.empty? 
     book.image_url = Database::S3.upload_url(image_url)
   end

@@ -1,6 +1,7 @@
 require 'securerandom'
 require './database/database.rb'
 require './database/redis.rb'
+require './database/s3.rb'
 require './models/book.rb'
 
 module Database
@@ -8,6 +9,31 @@ module Database
     def self.save_book book
       if book.book_id.nil? || book.book_id == ""
         book.book_id = SecureRandom.hex(16)
+      end
+
+      #SDB has a max of 1024 characters for attribute values. A good summary can be significantly longer than that,
+      #so we need to store it somewhere else instead. S3 will do. So we will store a key in SDB and that key will
+      #bring back a text/plain object from S3.
+      #if we are re-saving a book and the summary changed, we will want to update that in S3. The easiest way to do
+      #that is just to delete the old key and create a new one
+      needsNewSummaryKey = false
+      if book.summary.nil? || book.summary == ""
+        book.summary_key = ""
+      else
+        if book.summary_key.nil? || book.summary_key == ""
+          needsNewSummaryKey = true
+        else
+          existing_summary = S3.get_string_value(book.summary_key)
+          needsNewSummaryKey = (existing_summary != book.summary)
+        end
+      end
+
+      if needsNewSummaryKey
+        if !book.summary_key.nil? && book.summary_key != ""
+          S3.delete_key(book.summary_key)
+        end
+
+        book.summary_key = S3.upload_string_value(book.summary)
       end
 
       attributes = Models::Book.sdb_properties.map do |p|
@@ -26,6 +52,10 @@ module Database
 
       Redis.delete_book_id(book)
       SDB.delete_items('books', book)
+
+      if !book.summary_key.nil? && book.summary_key != ""
+        S3.delete_key(book.summary_key)
+      end
     end
 
     def self.list_books
@@ -60,6 +90,7 @@ module Database
         books.concat(page.data.items.map { |i| build_book_from_sdb_item(i) })
       end
 
+      books.each { |b| Redis.store_book(book) }
       return books
     end
 
@@ -71,6 +102,12 @@ module Database
         value = SDB.find_attribute(item, p).to_s
         method = p + "="
         book.send(method, value)
+      end
+
+      if book.summary_key.nil? || book.summary_key == ""
+        book.summary = ""
+      else
+        book.summary = S3.get_string_value(book.summary_key) || ""
       end
 
       return book

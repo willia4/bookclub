@@ -4,12 +4,13 @@ include ActionView::Helpers::DateHelper
 module Models
   class Book
     def self.sdb_properties
-      ["book_id", "title", "author", "summary", "image_url", "external_url", "read", "date_added"]
+      ["book_id", "title", "author", "summary_key", "image_url", "external_url", "read", "date_added"]
     end
 
     attr_accessor :book_id
     attr_accessor :title
     attr_accessor :author
+    attr_accessor :summary_key
     attr_accessor :summary
     attr_accessor :image_url
     attr_accessor :external_url
@@ -60,6 +61,7 @@ module Models
         h[p] = self.send(p)
       end
 
+      h["summary"] = self.summary
       h.to_json
     end
 
@@ -75,6 +77,7 @@ module Models
         r.send(method_name, h[p])
       end
 
+      r.summary = h["summary"]
       return r
     end
   end

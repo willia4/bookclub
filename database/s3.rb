@@ -30,7 +30,7 @@ module Database
       return buckets
     end
 
-    def self.upload_url url, file_extension = nil
+    def self.upload_url(url, file_extension = nil)
       uri = URI.parse(url)
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = (uri.scheme == "https")
@@ -53,7 +53,7 @@ module Database
         file_extension = ""
       end
 
-      key = SecureRandom.hex(12) + file_extension
+      key = SecureRandom.hex(36) + file_extension
 
       if !content_type.nil? && content_type != ""
         s3.put_object(content_type: content_type, acl: "public-read", bucket: $config[:aws][:s3][:bucket], body: io_object, key: key)
@@ -62,6 +62,44 @@ module Database
       end
 
       return "http://#{$config[:aws][:s3][:bucket]}.s3.amazonaws.com/#{key}"
+    end
+
+    def self.upload_string_value(value)
+      raise ArgumentError.new("value cannot be nil") if value.nil? 
+
+      s3 = get_database_client
+      key = SecureRandom.hex(36) + ".txt"
+
+      s3.put_object(content_type: "text/plain", acl: "private", bucket: $config[:aws][:s3][:bucket], body: value.to_s, key: key)
+
+      return key
+    end
+
+    def self.get_string_value(key)
+      raise ArgumentError.new("key cannot be nil") if key.nil? 
+      raise ArgumentError.new("key cannot be empty") if key == ""
+
+      s3 = get_database_client
+      begin
+        data = s3.get_object(bucket: $config[:aws][:s3][:bucket], key: key)
+      rescue Aws::S3::Errors::AccessDenied
+        return nil
+      end
+
+      return nil if data.nil? || data.data.nil? || data.data.body.nil?
+      return data.data.body.read
+    end
+
+    def self.delete_key(key)
+      raise ArgumentError.new("key cannot be nil") if key.nil? 
+      raise ArgumentError.new("key cannot be empty") if key == ""
+      
+      begin
+        s3 = get_database_client
+        s3.delete_object(bucket: $config[:aws][:s3][:bucket], key: key)
+      rescue
+        true
+      end
     end
   end
 end
