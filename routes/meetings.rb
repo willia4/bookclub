@@ -126,7 +126,7 @@ get '/meetings/meeting/:id' do |id|
   if @meeting.selected_book_id.nil? || @meeting.selected_book_id == "" 
     @initial_state_json = get_json_nominated_books_for_meeting(@meeting).gsub("'", %q(\\\')) # http://stackoverflow.com/questions/10551982/replace-single-quote-with-backslash-single-quote
   else
-    @initial_state_json = '';
+    @initial_state_json = '{}';
   end
 
   erb :meeting
@@ -204,5 +204,5 @@ get '/meetings/meeting/:meeting_id/books/:book_id/select' do |meeting_id, book_i
   Database::Books.save_book(book)
   
   status 200
-  book.title
+  "{}"
 end
