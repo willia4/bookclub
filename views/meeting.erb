@@ -5,7 +5,7 @@
 <% content_for :extra_javascript do %>
 <script id="book-nominations-template" type="text/x-handlebars-template">
 {{#each nominated_books}}
-<li class="row book-listing" data-id="{{book_id}}" data-votes="{{votes}}" data-user-vote="{{user_vote}}">
+<li class="row book-listing" data-id="{{book_id}}" data-title="{{title}}" data-votes="{{votes}}" data-user-vote="{{user_vote}}">
 	<div class="col-sm-1" style="font-size: 125%;">
 		<div class="row">
 			<div class="col-xs-12" style="text-align:center; font-weight: bold;">
@@ -27,13 +27,18 @@
 				<img class="book-image" src="{{image_url}}" />
 				{{/if}}
 			</div>
-			<div class="col-sm-offset-1 col-sm-9">
+			<div class="col-sm-offset-1 col-sm-8">
 				<div class="row">
 					<div class="col-xs-12 book-title">{{title}}</div>
 				</div>
 				<div class="row">
 					<div class="col-xs-12 book-author">{{author}}</div>
 				</div>
+			</div>
+			<div class="col-sm-1">
+				<% if @session_state[:show_admin] %>
+				<a href="#" class="book-reject-button" data-book-id="{{book_id}}" data-title="{{title}}">Reject</a></div>
+				<% end %>
 			</div>
 		</div>
 		<div class="row">
@@ -55,7 +60,7 @@
 <script src="/javascripts/jquery.easing.1.3.js"></script>
 <script src="/javascripts/jquery-css-transform.js"></script>
 <script src="/javascripts/jquery.quicksand.js"></script>
-
+<script src="/javascripts/bootbox.min.js"></script>
 <script src="/javascripts/handlebars-v2.0.0.js"></script>
 <script src="/javascripts/meeting.js"></script>
 <% end %>
