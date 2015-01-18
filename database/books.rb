@@ -90,7 +90,7 @@ module Database
         books.concat(page.data.items.map { |i| build_book_from_sdb_item(i) })
       end
 
-      books.each { |b| Redis.store_book(book) }
+      books.each { |b| Redis.store_book(b) }
       return books
     end
 
