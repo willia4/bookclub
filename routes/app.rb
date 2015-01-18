@@ -35,7 +35,7 @@ end
 [:get, :post, :put, :delete].each do |method|
   send method, '*' do
     # if the user is trying to login, don't tell them they aren't logged in. They know.
-    pass if request.path_info.start_with?("/signin")
+    pass if request.path_info.start_with?("/signin") || request.path_info.start_with?("/signout")
 
     if !@session_state[:logged_in]
       status 401
