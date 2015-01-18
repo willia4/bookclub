@@ -20,7 +20,7 @@ module Models
     attr_accessor :user_vote
 
     def read=(read)
-      @read = ((read == "true") || (read == "yes"))
+      @read = ((read == "true") || (read == "yes") || (read == true))
     end
 
     def read

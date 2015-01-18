@@ -105,6 +105,25 @@ $(document).ready(function () {
 		});
 	}
 
+	function startSelect(bookId) {
+		var url;
+
+		removeEventHandlers();
+		$("#page-spinner").removeClass("invisible");
+
+		url = "/meetings/meeting/" + meetingId + "/books/" + bookId + "/select";
+		$.ajax({
+			type: 'GET',
+			url: url,
+			error: function (jqXHR, textStatus, errorThrown) {
+				$("#page-spinner").addClass("invisible");
+			},
+			success: function (data) {
+				document.location.reload(true);
+			}
+		});
+	}
+
 	function rejectHandler(event) {
 		var t = $(this);
 		bootbox.dialog({
@@ -113,16 +132,40 @@ $(document).ready(function () {
 			buttons: {
 				no: {
 					label: "No",
-					class: "btn-primary",
+					className: "btn btn-primary",
 					callback: function () {
 						//the box will close on its own
 					}
 				},
 				reject: {
 					label: "Reject",
-					class: "btn-danger",
+					className: "btn btn-danger",
 					callback: function () {
 						startRejection(t.data("book-id"));
+					}
+				}
+			}
+		});
+	}
+
+	function selectHandler(event) {
+		var t= $(this);
+		bootbox.dialog({
+			title: "Select Book",
+			message: "Are you sure you want to choose \"" + t.data('title') + "\" for this meeting?",
+			buttons: {
+				no: {
+					label: "No",
+					className: "btn btn-primary",
+					callback: function () {
+						//the box will close on its own
+					}
+				},
+				select: {
+					label: "Select",
+					className: "btn btn-success",
+					callback: function () {
+						startSelect(t.data("book-id"));
 					}
 				}
 			}
@@ -133,12 +176,14 @@ $(document).ready(function () {
 		$(".vote-up-button:not(.vote-selected)").on("click", voteUpHandler);
 		$(".vote-down-button:not(.vote-selected)").on("click", voteDownHandler);
 		$(".book-reject-button").on("click", rejectHandler);
+		$(".book-select-button").on("click", selectHandler);
 	}
 
 	function removeEventHandlers() {
 		$(".vote-up-button").off("click");
 		$(".vote-down-button").off("click");
 		$(".book-reject-button").off("click");
+		$(".book-select-button").off("click");
 	}
 
 	if(!selectedBookId) {

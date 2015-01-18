@@ -87,5 +87,16 @@ module Database
       Redis.delete_votes_for_meeting(meeting_id)
       SDB.delete_items('votes', item_names)
     end
+
+    def self.delete_votes_for_meeting(meeting_id)
+      data = SDB.select("select * from #{SDB.build_domain("votes")} where meeting_id = '#{meeting_id}'")
+      item_names = []
+      data.each do |page|
+        item_names.concat(page.data.items.map { |i| i.name })
+      end
+
+      Redis.delete_votes_for_meeting(meeting_id)
+      SDB.delete_items('votes', item_names)
+    end
   end
 end

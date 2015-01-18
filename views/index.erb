@@ -41,7 +41,14 @@
 								</ul>
 							</div>
 							<% else %>
-
+							<div class="row">
+								<div class="col-sm-12"><i><b><%= selected_book.title %></b></i></div>
+							</div>
+							<% if selected_book.image_url && selected_book.image_url != "" %>
+							<div class="row">
+								<div class="col-sm-12"><img src="<%= selected_book.image_url %>"/></div>
+							</div>
+							<% end%>
 							<% end %>
 						</div>
 					</li>

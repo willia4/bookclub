@@ -169,7 +169,7 @@ post '/meetings/meeting/:meeting_id/books/:book_id/vote/:direction' do |meeting_
 end
 
 delete '/meetings/meeting/:meeting_id/books/:book_id' do |meeting_id, book_id|
-  raise AuthorizationError.new("access admin area", "Only administrators may access admin functionality") if @session_state[:user_profile].user_status != 'admin'
+  raise AuthorizationError.new("reject book from meeting", "Only administrators may reject books from a meeting") if @session_state[:user_profile].user_status != 'admin'
 
   meeting = Database::Meetings.find_meeting_by_meeting_id(meeting_id)
   raise NotFoundError.new("rejecting book", "the meeting could not be found") if meeting.nil?
@@ -181,4 +181,28 @@ delete '/meetings/meeting/:meeting_id/books/:book_id' do |meeting_id, book_id|
   Database::Meetings.save_meeting(meeting)
 
   get_json_nominated_books_for_meeting(meeting)
+end
+
+get '/meetings/meeting/:meeting_id/books/:book_id/select' do |meeting_id, book_id|
+  raise AuthorizationError.new("selecting book", "Only administrators may select books for a meeting") if @session_state[:user_profile].user_status != 'admin'
+
+  meeting = Database::Meetings.find_meeting_by_meeting_id(meeting_id)
+  raise NotFoundError.new("selecting book", "the meeting could not be found") if meeting.nil?
+  raise AppError.new("selecting book", "this meeting is not open for voting") if (!meeting.selected_book_id.nil? && meeting.selected_book_id != "")
+  raise NotFoundError.new("selecting book", "the book is not nominated for this meeting") if (meeting.nominated_book_ids.find { |bid| bid == book_id}).nil?
+
+  book = Database::Books.find_book_by_book_id(book_id)
+  raise NotFoundError.new("selecting book", "the book could not be found") if book.nil?
+
+  meeting.selected_book_id = book.book_id
+  meeting.nominated_book_ids = []
+
+  Database::Meetings.delete_votes_for_meeting(meeting_id)
+  Database::Meetings.save_meeting(meeting)
+
+  book.read = true 
+  Database::Books.save_book(book)
+  
+  status 200
+  book.title
 end
