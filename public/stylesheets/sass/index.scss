@@ -103,5 +103,7 @@ ul.book-list, ul.meeting-list {
 }
 
 .meeting-book-image {
-	max-height: 128px;
+	img {
+		max-height: 128px;
+	}
 }
