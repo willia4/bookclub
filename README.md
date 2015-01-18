@@ -14,20 +14,4 @@ For now, email the maintainer to get a current sample.
 
 # TODO
 
-* Delete Users
-	* This is relatively easy to implement, except we need to figure out what to do with artifacts that are tied to that user. I've decided to save that for another day.
-* Google Login in addition to Facebook; possibly others as well
-	* In particular, users should be able to link multiple external authenticated accounts to their local accounts so they can pick whichever "Login With FOO" button makes them happy at the moment
-* More info on meetings with a selected book
-* Book pages
-* Profile editing
-* Meeting editing
-* Book editing
-* Adding specific nominations to a meeting
-* Delete Book
-* Delete Meeting
-* Ability for admin or submitter to reject a book from future consideration without deleting it
-* List of all books: read, unread, rejected
-* List of all meetings: past and present
-* Comments on meetings
-* Comments on books
+The TODO list is now tracked via [Github Issues](https://github.com/willia4/bookclub/issues)
