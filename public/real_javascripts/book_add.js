@@ -17,7 +17,7 @@ $(document).ready(function () {
 								'<div class="col-sm-2">' +
 									'<div class="row"><div class="col-xs-12">&nbsp;</div></div>' + //spacer
 									'<div class="row"><div class="col-xs-12">' + 
-										'<button class="search-select-button" ' + 
+										'<button class="search-select-button btn btn-primary" ' + 
 											'data-title="' + r.title + '" ' +
 											'data-author="' + r.author + '" ' + 
 											'data-id="' + r.id + '" ' + 
@@ -49,8 +49,9 @@ $(document).ready(function () {
 
 			$("#add-book-title").val(title);
 			$("#add-book-author").val(author);
-			$("#add-book-image-url").val(image);
 			$("#add-book-external-url").val(goodreadsUrl);
+			$("#add-book-image-url").val(image);
+			$("#add-book-image-url").change();
 
 			e.remove();
 
@@ -99,9 +100,10 @@ $(document).ready(function () {
 			success: function (data) { 
 				$("#add-book-title").val(data.title);
 				$("#add-book-author").val(data.author);
-				$("#add-book-image-url").val(data.image);
 				$("#add-book-external-url").val(data.url);
 				$("#add-book-summary").val(data.description);
+				$("#add-book-image-url").val(data.image);
+				$("#add-book-image-url").change();
 
 				$("#add-book-title").removeAttr("readonly")
 				$("#add-book-author").removeAttr("readonly")
@@ -153,6 +155,19 @@ $(document).ready(function () {
 					url: "/books/search?query=" + encodeURIComponent(searchText)
 				})
 			}
+		}
+	});
+
+	$("#add-book-image-url").change(function () {
+		var inputEl = $(this),
+			img_container = $("#book-image-preview")
+			url = inputEl.val(); 
+
+		if (url.match(/^http[s]?/)) {
+			img_container.html('<img src="' + url + '"/>');
+		} 
+		else {
+			img_container.html("");
 		}
 	});
 
