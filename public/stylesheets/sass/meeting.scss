@@ -1,0 +1,7 @@
+.vote-button:not(.vote-selected) {
+	color: black;
+}
+
+.vote-button.vote-selected {
+	color: "#337ab7"
+}

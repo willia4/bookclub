@@ -54,10 +54,10 @@ module Database
       data.each do |page|
         votes.concat(page.data.items.map do |i|
           {
-            :meeting_id => meeting_id,
-            :book_id => SDB.find_attribute(i, "book_id"),
-            :user_profile_id => SDB.find_attribute(i, "user_profile_id"),
-            :vote => SDB.find_attribute(i, "vote").to_i
+            "meeting_id" => meeting_id,
+            "book_id" => SDB.find_attribute(i, "book_id"),
+            "user_profile_id" => SDB.find_attribute(i, "user_profile_id"),
+            "vote" => SDB.find_attribute(i, "vote").to_i
           }
         end)
       end

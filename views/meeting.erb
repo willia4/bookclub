@@ -1,6 +1,62 @@
-<div class="container">
+<% content_for :extra_css do %>
+<link rel="stylesheet" type="text/css" href="/stylesheets/meeting.css" />
+<% end %>
+
+<% content_for :extra_javascript do %>
+<script id="book-nominations-template" type="text/x-handlebars-template">
+{{#each nominated_books}}
+<li class="row book-listing" data-id="{{book_id}}" data-votes="{{votes}}" data-user-vote="{{user_vote}}">
+	<div class="col-sm-1" style="font-size: 125%;">
+		<div class="row">
+			<div class="col-xs-12" style="text-align:center; font-weight: bold;">
+				<a href="#" class="vote-button vote-up-button {{#if upvoted}}vote-selected{{/if}}" data-id="{{book_id}}"><span class="glyphicon glyphicon-arrow-up"></span></a>
+			</div>
+		</div>
+		<div class="row"><div class="col-xs-12" style="text-align:center">{{votes}}</div></div>
+		<div class="row">
+			<div class="col-xs-12" style="text-align:center">
+				<a href="#" class="vote-button vote-down-button {{#if downvoted}}vote-selected{{/if}}" data-id="{{book_id}}"><span class="glyphicon glyphicon-arrow-down"></span></a>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-sm-11">
+		<div class="row">
+			<div class="col-sm-2">
+				{{#if image_url}}
+				<img class="book-image" src="{{image_url}}" />
+				{{/if}}
+			</div>
+			<div class="col-sm-offset-1 col-sm-9">
+				<div class="row">
+					<div class="col-xs-12 book-title">{{title}}</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-12 book-author">{{author}}</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-offset-7 col-sm-5 book-date-added" title="{{date_added_formatted}}">
+				Added {{age_statement}}
+			</div>
+		</div>
+	</div>
+</li>
+{{/each}}
+</script>
+
+<script src="/javascripts/jquery.easing.1.3.js"></script>
+<script src="/javascripts/jquery-css-transform.js"></script>
+<script src="/javascripts/jquery.quicksand.js"></script>
+
+<script src="/javascripts/handlebars-v2.0.0.js"></script>
+<script src="/javascripts/meeting.js"></script>
+<% end %>
+
+<div id="meeting-container" class="container" data-meeting-id="<%= @meeting.meeting_id %>" data-meeting-selected-book-id="<%= @meeting.selected_book_id %>">
 	<div class="row">
-		<div class="col-sm-12 page-title"><div>Meeting</div></div>
+		<div class="col-sm-12 page-title"><div><img id="page-spinner" class="invisible" src="/images/spinner.gif"/>Meeting</div></div>
 	</div>
 	<div class="row">
 		<div id="sidebar" class="col-md-4">
@@ -20,47 +76,7 @@
 				<div class="col-xs-12 col-sm-9 content-title"><div>Nominations</div></div>
 			</div>
 			<ul class="book-list">
-			<% @nominated_books.each do |book| %>
-				<li class="row book-listing" data-id="<%= book.book_id %>">
-					<div class="col-sm-1" style="font-size: 125%;">
-						<div class="row">
-							<div class="col-xs-12" style="text-align:center; font-weight: bold;">
-								<span class="glyphicon glyphicon-arrow-up"></span>
-							</div>
-						</div>
-						<div class="row"><div class="col-xs-12" style="text-align:center">0</div></div>
-						<div class="row">
-							<div class="col-xs-12" style="text-align:center">
-								<span class="glyphicon glyphicon-arrow-down"></span>
-							</div>
-						</div>
-					</div>
-					<div class="col-sm-11">
-						<div class="row">
-							<div class="col-sm-2">
-								<% if book.image_url && !book.image_url.empty? %>
-								<img class="book-image" src="<%= book.image_url %>" />
-								<% end %>
-							</div>
-							<div class="col-sm-offset-1 col-sm-9">
-								<div class="row">
-									<div class="col-xs-12 book-title"><%= book.title %></div>
-								</div>
-								<div class="row">
-									<div class="col-xs-12 book-author"><%= book.author %></div>
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<% date_added = Time.parse(book.date_added).getlocal
-							  today = Time.now.getlocal %>
-							<div class="col-sm-offset-7 col-sm-5 book-date-added" title="<%= date_added.strftime("%Y-%b-%d @ %I:%M%P %Z") %>">
-								Added <%= (date_added.year == today.year && date_added.month == today.month && date_added.day == today.day) ? "today" : book.age + " ago" %>
-							</div>
-						</div>
-					</div>
-				</li>
-			<% end %>
+			
 			</ul>
 			<% end #if @nominated_books %>
 		</div>
