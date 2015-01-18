@@ -25,12 +25,6 @@ $(document).ready(function () {
 		})
 	}
 
-	function loadBooksHandler(html) {
-		$("ul.book-list").html(html);
-		$(".vote-up-button:not(.vote-selected)").on("click", voteUpHandler);
-		$(".vote-down-button:not(.vote-selected)").on("click", voteDownHandler);
-	}
-
 	function startVote(bookId, direction) {
 		var url;
 
@@ -82,6 +76,9 @@ $(document).ready(function () {
 	}
 
 	if(!selectedBookId) {
-		loadBooksHtml(loadBooksHandler);
+		html = template(window.bbBookClub.initialState);
+		$("ul.book-list").html(html);
+		$(".vote-up-button:not(.vote-selected)").on("click", voteUpHandler);
+		$(".vote-down-button:not(.vote-selected)").on("click", voteDownHandler);
 	}
 });

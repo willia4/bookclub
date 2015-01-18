@@ -62,7 +62,7 @@ def get_json_nominated_books_for_meeting(meeting)
     }
   end
 
-  JSON.pretty_generate({:nominated_books => nominated_books})   
+  JSON.generate({:nominated_books => nominated_books})   
 end
 
 [:get, :post].each do |method|
@@ -124,12 +124,9 @@ get '/meetings/meeting/:id' do |id|
   raise NotFoundError.new("load the requested meeting", "The meeting could not be found") if @meeting.nil?
 
   if @meeting.selected_book_id.nil? || @meeting.selected_book_id == "" 
-    @votes = Database::Meetings.find_votes_for_meeting(id)
-
-    @nominated_books = get_nominated_books_for_meeting(@meeting)
+    @initial_state_json = get_json_nominated_books_for_meeting(@meeting).gsub("'", %q(\\\')) # http://stackoverflow.com/questions/10551982/replace-single-quote-with-backslash-single-quote
   else
-    @votes = []
-    @nominated_books = []
+    @initial_state_json = '';
   end
 
   erb :meeting
