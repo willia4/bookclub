@@ -65,6 +65,13 @@ post '/books/add' do
   JSON.pretty_generate({"book_id" => book.book_id, "book_url" => book_url, "redirect_url" => base_url})   
 end
 
+get '/books/book/:book_id' do |book_id|
+  @book = Database::Books.find_book_by_book_id(book_id)
+  raise NotFoundError.new("load the requested book", "The book could not be found") if @book.nil?
+
+  erb :book
+end
+
 get '/books/search' do
   query = params[:query]
   results = []

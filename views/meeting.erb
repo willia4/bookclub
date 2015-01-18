@@ -24,12 +24,12 @@
 		<div class="row">
 			<div class="col-sm-2">
 				{{#if image_url}}
-				<img class="book-image" src="{{image_url}}" />
+				<a href="{{book_url}}"><img class="book-image" src="{{image_url}}" /></a>
 				{{/if}}
 			</div>
 			<div class="col-sm-offset-1 col-sm-6">
 				<div class="row">
-					<div class="col-xs-12 book-title">{{title}}</div>
+					<div class="col-xs-12 book-title"><a href="{{book_url}}">{{title}}</a></div>
 				</div>
 				<div class="row">
 					<div class="col-xs-12 book-author">{{author}}</div>

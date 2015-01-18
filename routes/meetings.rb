@@ -54,9 +54,10 @@ def get_json_nominated_books_for_meeting(meeting)
       :image_url => b.image_url,
       :title => b.title,
       :author => b.author,
+      :book_url => b.book_url,
       :date_added => date_added,
       :date_added_formatted => date_added.strftime("%Y-%b-%d @ %I:%M%P %Z"),
-      :age_statement => "Added " + age,
+      :age_statement => age,
       :upvoted => (b.user_vote > 0),
       :downvoted => (b.user_vote < 0)
     }
