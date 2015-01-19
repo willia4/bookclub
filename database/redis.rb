@@ -14,6 +14,10 @@ module Database
       return $redis_client
     end
 
+    def self.delete_all_keys
+      delete_all_keys_matching_pattern("*")
+    end
+
     def self.delete_all_keys_matching_pattern(pattern)
       redis = get_database_client
       redis.keys(pattern).each { |key| redis.del(key) }
@@ -122,6 +126,28 @@ module Database
 
     def self.delete_all_css
       delete_all_keys_matching_pattern("css:*")
+    end
+
+    def self.store_string(key, value)
+      key = "text:#{key}"
+      redis = get_database_client
+      redis.set(key, value)
+      redis.expire(key, 2 * 60 * 60)
+      value
+    end
+
+    def self.find_string(key)
+      key = "text:#{key}"
+      get_database_client.get(key)
+    end
+
+    def self.delete_string(key)
+      key = "text:#{key}"
+      get_database_client.del(key)
+    end
+
+    def self.delete_all_strings
+      delete_all_keys_matching_pattern("text:*")
     end
   end
 end

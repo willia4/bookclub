@@ -30,7 +30,7 @@ module Database
 
       if needsNewSummaryKey
         if !book.summary_key.nil? && book.summary_key != ""
-          S3.delete_key(book.summary_key)
+          S3.delete_string_value(book.summary_key)
         end
 
         book.summary_key = S3.upload_string_value(book.summary)
@@ -54,7 +54,7 @@ module Database
       SDB.delete_items('books', book)
 
       if !book.summary_key.nil? && book.summary_key != ""
-        S3.delete_key(book.summary_key)
+        S3.delete_string_value(book.summary_key)
       end
     end
 

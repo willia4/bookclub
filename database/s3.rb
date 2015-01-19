@@ -2,6 +2,7 @@ require 'aws-sdk-core'
 require 'securerandom'
 require 'open-uri'
 require 'net/http'
+require './database/redis.rb'
 
 module Database
   module S3
@@ -71,13 +72,16 @@ module Database
       key = SecureRandom.hex(36) + ".txt"
 
       s3.put_object(content_type: "text/plain", acl: "private", bucket: $config[:aws][:s3][:bucket], body: value.to_s, key: key)
-
+      Redis.store_string(key, value)
       return key
     end
 
     def self.get_string_value(key)
       raise ArgumentError.new("key cannot be nil") if key.nil? 
       raise ArgumentError.new("key cannot be empty") if key == ""
+
+      value = Redis.find_string(key)
+      return value if !value.nil?
 
       s3 = get_database_client
       begin
@@ -86,14 +90,22 @@ module Database
         return nil
       end
 
-      return nil if data.nil? || data.data.nil? || data.data.body.nil?
-      return data.data.body.read
+      if data.nil? || data.data.nil? || data.data.body.nil?
+        Redis.store_string(key, "")
+        return ""
+      end
+      
+      value = data.data.body.read
+
+      Redis.store_string(key, value)
+      return value
     end
 
-    def self.delete_key(key)
+    def self.delete_string_value(key)
       raise ArgumentError.new("key cannot be nil") if key.nil? 
       raise ArgumentError.new("key cannot be empty") if key == ""
       
+      Redis.delete_string(key)
       begin
         s3 = get_database_client
         s3.delete_object(bucket: $config[:aws][:s3][:bucket], key: key)
