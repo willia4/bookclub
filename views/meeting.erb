@@ -96,12 +96,12 @@
 			</ul>
 			<% elsif !@selected_book.nil? %>
 			<div class="row">
-				<div class="col-sm-12 content-title"><div><i><%= @selected_book.title %></i> by <%= @selected_book.author %></div></div>
+				<div class="col-sm-12 content-title"><div><a href="<%= @selected_book.book_url %>"><i><%= @selected_book.title %></i> by <%= @selected_book.author %></a></div></div>
 			</div>
 			<div class="row">
 				<% if @selected_book.image_url && @selected_book.image_url != "" %>
 				<div class="col-sm-3 book-cover">
-					<img src="<%= @selected_book.image_url %>"/>
+					<a href="<%= @selected_book.book_url %>"><img src="<%= @selected_book.image_url %>"/></a>
 				</div>
 				<% end %>
 				<div class="col-sm-9">
