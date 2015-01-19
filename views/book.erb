@@ -1,5 +1,46 @@
+<% content_for :extra_css do %>
+<link rel="stylesheet" type="text/css" href="/stylesheets/book.css" />
+<% end %>
+
 <div class="container">
 	<div class="row">
 		<div class="col-sm-12 page-title"><div><%= @book.title %></div></div>
+	</div>
+	<div class="row">
+		<div id="sidebar" class="col-md-2">
+			<% if @book.image_url && @book.image_url != "" %>
+			<div class="row book-cover-row">
+				<div class="col-xs-12 book-cover">
+					<img src="<%=@book.image_url%>"/>
+				</div>
+			</div>
+			<% end %>
+
+			<% if @book.external_url && @book.external_url != "" %>
+			<% 	external_url_title = "More Info" 
+				external_url_title = "More Info on Goodreads" if @book.external_url =~ /(http[s]?:\/\/)?(www\.)?goodreads\.com/
+			%>
+			<div class="row more-info-row">
+				<div class="col-xs-12 more-info">
+					<a href="<%= @book.external_url %>"><%= external_url_title %></a>
+				</div>
+			</div>
+			<% end %>
+		</div>
+		<div id="main-content" class="col-md-10">
+			<div class="row">
+				<div class="col-xs-12 col-sm-9 content-title">
+					<div>by <%= @book.author %></div>
+				</div>
+				<div class="col-xs-0 col-sm-3"><!--spacer--></div>
+			</div>
+			<div class="row summary-row">
+				<% if @book.summary && @book.summary != "" %>
+				<div class="col-xs-12 summary">
+					<%= @book.summary %>
+				</div>
+				<% end %>
+			</div>
+		</div>
 	</div>
 </div>
