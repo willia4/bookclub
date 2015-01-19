@@ -125,8 +125,10 @@ get '/meetings/meeting/:id' do |id|
   raise NotFoundError.new("load the requested meeting", "The meeting could not be found") if @meeting.nil?
 
   if @meeting.selected_book_id.nil? || @meeting.selected_book_id == "" 
+    @selected_book = nil
     @initial_state_json = get_json_nominated_books_for_meeting(@meeting).gsub("'", %q(\\\')) # http://stackoverflow.com/questions/10551982/replace-single-quote-with-backslash-single-quote
   else
+    @selected_book = Database::Books.find_book_by_book_id(@meeting.selected_book_id)
     @initial_state_json = '{}';
   end
 

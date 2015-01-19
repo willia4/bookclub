@@ -87,13 +87,37 @@
 			</div>
 		</div>
 		<div id="main-content" class="col-md-8">
-			<% if @meeting.selected_book_id.nil? || @meeting.selected_book_id == "" %>
+			<% if @selected_book.nil? %>
 			<div class="row">
 				<div class="col-sm-12 content-title"><div>Nominations</div></div>
 			</div>
 			<ul class="book-list">
 			
 			</ul>
+			<% elsif !@selected_book.nil? %>
+			<div class="row">
+				<div class="col-sm-12 content-title"><div><i><%= @selected_book.title %></i> by <%= @selected_book.author %></div></div>
+			</div>
+			<div class="row">
+				<% if @selected_book.image_url && @selected_book.image_url != "" %>
+				<div class="col-sm-2 book-cover">
+					<img src="<%= @selected_book.image_url %>"/>
+				</div>
+				<% end %>
+				<div class="col-sm-10">
+					<% if @selected_book.summary && @selected_book.summary != "" %>
+					<div class="summary">
+						<%= @selected_book.summary %>
+					</div>
+					<% end %>
+					<% if @selected_book.external_url && @selected_book.external_url != "" %>
+					<% 	external_url_title = "More Info" 
+						external_url_title = "More Info on Goodreads" if @selected_book.external_url =~ /(http[s]?:\/\/)?(www\.)?goodreads\.com/
+					%>
+					<a href="<%= @selected_book.external_url %>"><%= external_url_title %></a>
+					<% end %>
+				</div>
+			</div>
 			<% end %>
 		</div>
 	</div>
