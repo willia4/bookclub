@@ -76,3 +76,54 @@
 		opacity: 0.4;
 	}
 }
+
+#search-results {
+	display: block;
+	position: absolute; 
+
+	height: 80%;
+	width: 86%;
+
+	left: 7%;
+	top: 10%;
+
+	background-color: #f8f8f8;
+
+	border-color: #e7e7e7;
+	border-width: 2px;
+	border-style: solid;
+	border-radius: 15px;
+
+	padding: 15px;
+
+	overflow: auto;
+
+	#search-results-close-container {
+		text-align: right;
+		margin-bottom: 15px;
+	}
+
+	.search-listing {
+		margin-bottom: 15px;
+		padding-top: 7px;
+		padding-bottom: 8px;
+
+		img {
+			max-width: 100px;
+		}
+	}
+
+	.search-listing:nth-child(even) { 
+		background-color: #e7e7e7;
+	}
+
+	.search-title {
+		font-size: 125%;
+		font-weight: bold;
+	}
+
+	.search-author {
+		font-size: 115%;
+		font-style: italic;
+	}
+}

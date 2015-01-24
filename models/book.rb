@@ -51,8 +51,16 @@ module Models
       @date_added = Time.now
     end
 
+    def == other
+      return self.book_id == other.book_id
+    end
+
     def <=> other
-      return self.title <=> other.title
+      if self.title != other.title
+        return self.title <=> other.title
+      else
+        return self.author <=> other.author
+      end
     end
 
     def to_json

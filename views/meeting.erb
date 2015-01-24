@@ -72,6 +72,7 @@
 <script src="/javascripts/handlebars-v2.0.0.js"></script>
 <script src="/javascripts/meeting.js"></script>
 <script src="/javascripts/meeting_edit.js"></script>
+<script src="/javascripts/meeting_add_book.js"></script>
 <% end %>
 
 <div id="meeting-container" class="container" 
@@ -109,7 +110,12 @@
 		<div id="main-content" class="col-md-8">
 			<% if @selected_book.nil? %>
 			<div class="row">
-				<div class="col-sm-12 content-title"><div>Nominations</div></div>
+				<div class="col-sm-12 content-title">
+					<% if @session_state[:show_admin] %>
+					<a id="add-book-button" class="title-button" href="#"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a>
+					<% end %>
+					<div>Nominations</div>
+				</div>
 			</div>
 			<ul class="book-list">
 				<img class="spinner" src="/images/spinner.gif"/>

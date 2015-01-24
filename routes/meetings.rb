@@ -66,8 +66,8 @@ def get_json_nominated_books_for_meeting(meeting)
   JSON.generate({:nominated_books => nominated_books})   
 end
 
-[:get, :post].each do |method|
-  ['/meetings/add', '/meetings/meeting/:id/edit'].each do |route|
+[:get, :post, :put].each do |method|
+  ['/meetings/add', '/meetings/meeting/:id/edit', '/meetings/meeting/:meeting_id/books/:book_id'].each do |route|
     send method, route do
       pass if @session_state[:user_profile].user_status == 'admin'
 
@@ -171,6 +171,29 @@ post '/meetings/meeting/:id/edit' do |id|
   "{}"
 end
 
+get '/meetings/meeting/:meeting_id/other_unread' do |meeting_id|
+  meeting = Database::Meetings.find_meeting_by_meeting_id meeting_id
+  raise NotFoundError.new("edit the requested meeting", "The meeting could not be found") if meeting.nil?
+
+  my_books = get_nominated_books_for_meeting(meeting)
+  books = Database::Books.list_unread_books
+
+  books = books
+            .sort
+            .select { |b| !my_books.include?(b) }
+            .map do |b|
+              {
+                "book_id" => b.book_id,
+                "title" => b.title,
+                "author" => b.author,
+                "image_url" => b.image_url
+              }
+            end
+
+  content_type :json, 'charset' => 'utf-8'
+  JSON.pretty_generate({:books => books})
+end
+
 get '/meetings/meeting/:meeting_id/books' do |meeting_id|
   meeting = Database::Meetings.find_meeting_by_meeting_id(meeting_id)
   raise NotFoundError.new("listing meeting books", "the meeting could not be found") if meeting.nil?
@@ -205,6 +228,24 @@ post '/meetings/meeting/:meeting_id/books/:book_id/vote/:direction' do |meeting_
   content_type :json, 'charset' => 'utf-8'
   
   get_json_nominated_books_for_meeting(meeting)
+end
+
+put '/meetings/meeting/:meeting_id/books/:book_id' do |meeting_id, book_id|
+    meeting = Database::Meetings.find_meeting_by_meeting_id(meeting_id)
+    raise NotFoundError.new("adding a book to a meeting", "the meeting could not be found") if meeting.nil?
+    raise NotFoundError.new("adding a book to a meeting", "the meeting is not open for voting") if (!meeting.selected_book_id.nil? && meeting.selected_book_id != "")
+
+    book = Database::Books.find_book_by_book_id(book_id)
+    raise NotFoundError.new("adding a book to a meeting", "the book could not be found") if book.nil?
+
+    raise AppError.new("adding a book to a meeting", "this meeting already has this book") if meeting.nominated_book_ids.include?(book_id)
+
+    meeting.nominated_book_ids << book_id
+    Database::Meetings.save_meeting(meeting)
+
+    status 200
+    content_type :json, 'charset' => 'utf-8'
+    "{}"
 end
 
 delete '/meetings/meeting/:meeting_id/books/:book_id' do |meeting_id, book_id|
