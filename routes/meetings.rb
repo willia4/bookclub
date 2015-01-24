@@ -77,6 +77,7 @@ end
 end
 
 get '/meetings/add' do
+  @page_state[:page_title] = "Add a meeting"
   erb :meeting_add
 end
 
@@ -122,6 +123,8 @@ end
 
 get '/meetings/meeting/:id' do |id|
   @meeting = Database::Meetings.find_meeting_by_meeting_id id
+  @page_state[:page_title] = "#{@meeting.date} Meeting"
+
   raise NotFoundError.new("load the requested meeting", "The meeting could not be found") if @meeting.nil?
 
   if @meeting.selected_book_id.nil? || @meeting.selected_book_id == "" 

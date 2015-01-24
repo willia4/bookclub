@@ -6,6 +6,7 @@ require './models/book.rb'
 require './exceptions/AppError.rb'
 
 get '/books/add' do 
+  @page_state[:page_title] = "Nominate a book"
   erb :book_add
 end
 
@@ -68,6 +69,8 @@ end
 
 get '/books/book/:book_id' do |book_id|
   @book = Database::Books.find_book_by_book_id(book_id)
+  @page_state[:page_title] = @book.title
+
   raise NotFoundError.new("load the requested book", "The book could not be found") if @book.nil?
 
   erb :book
