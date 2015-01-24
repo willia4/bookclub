@@ -16,6 +16,14 @@ require 'yaml'
 # load config into global variable
 raise "Missing secrets.yaml file. This file is not tracked in source control and must be created." if not File.file?('./secrets.yaml')
 $config = YAML::load(File.open("secrets.yaml"))
+if !$config[:general].has_key?(:mode)
+	$config[:general][:mode] = "PROD"
+end
+
+#default to PROD if anything other than DEV is specified
+if $config[:general][:mode] != "DEV"
+	$config[:general][:mode] = "PROD"
+end
 
 use Rack::Throttle::Hourly, :max => 3000
 helpers Sinatra::ContentFor2

@@ -14,6 +14,26 @@ module Database
       return $redis_client
     end
 
+    def self.expiration_time_in_seconds
+      #in dev mode, have things expire quickly (one hour)
+      #in prod mode, have things expire slowly (30 days)
+      base = ($config[:general][:mode] == "DEV" ? 1 * 60 * 60 : 30 * 24 * 60 * 60)
+
+      #add a little bit of random jitter so a bunch of stuff doesn't expire all at the same time
+      #since expiration for prod stuff is in days instead of hours, we need to have randomness in terms of days as well otehrwise it won't really matter
+      if $config[:general][:mode] == "DEV" 
+        #minutes
+        jitter = Random.rand(-10..45) 
+        jitter = jitter * 60
+      else
+        #days
+        jitter = Random.rand(-2..5)
+        jitter = jitter * 24 * 60 * 60
+      end
+      
+      return base + jitter
+    end
+
     def self.delete_all_keys
       delete_all_keys_matching_pattern("*")
     end
@@ -29,7 +49,7 @@ module Database
       redis = get_database_client
 
       redis.set(key, json)
-      redis.expire(key, 1 * 60 * 60) #expire in one hour
+      redis.expire(key, expiration_time_in_seconds)
     end
 
     def self.find_user_profile_for_session(session_token)
@@ -66,7 +86,7 @@ module Database
       redis = get_database_client
       key = "book:#{book.book_id}"
       redis.set(key, book.to_json)
-      redis.expire(key, 2 * 60 * 60)
+      redis.expire(key, expiration_time_in_seconds)
     end
 
     def self.find_book_by_book_id(book_id)
@@ -91,7 +111,7 @@ module Database
       key = "votes:#{meeting_id}"
       votes = JSON.generate(votes)
       redis.set(key, votes)
-      redis.expire(key, 2 * 60 * 60)
+      redis.expire(key, expiration_time_in_seconds)
     end
 
     def self.find_votes_for_meeting(meeting_id)
@@ -115,7 +135,7 @@ module Database
       redis = get_database_client
       key = "css:#{file_name}:mtime:#{modified_time}"
       redis.set(key, css)
-      redis.expire(key, 2 * 60 * 60) # two hours, if only because we don't want stale css hanging out taking up memory
+      redis.expire(key, expiration_time_in_seconds)
     end
 
     def self.find_css(file_name, modified_time)
@@ -132,7 +152,7 @@ module Database
       key = "text:#{key}"
       redis = get_database_client
       redis.set(key, value)
-      redis.expire(key, 2 * 60 * 60)
+      redis.expire(key, expiration_time_in_seconds)
       value
     end
 
