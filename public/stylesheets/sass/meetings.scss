@@ -1,0 +1,37 @@
+.meeting-listing {
+	min-height: 100px;
+
+	margin-bottom: 15px;
+	padding-top: 7px;
+	padding-bottom: 8px;
+
+	.book-cover {
+		img {
+			max-width: 100px
+		}
+	}
+
+	.open-voting {
+		font-variant: small-caps;
+	}
+
+	ul {
+		li {
+			font-style: italic;
+			font-size: 85%;
+		}
+	}
+
+	.meeting-date {
+		font-size: 125%;
+		font-weight: bold;
+	}
+}
+
+.meeting-listing:nth-child(odd) {
+	background-color: #f5f5f5;
+}
+
+.meeting-listing:nth-child(even) {
+	background-color: #fdfdfd;
+}

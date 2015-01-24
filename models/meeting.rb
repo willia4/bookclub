@@ -47,6 +47,10 @@ module Models
       end
     end
 
+    def <=> other
+      return self.date <=> other.date
+    end
+
     def initialize
       @nominated_book_ids = []
     end

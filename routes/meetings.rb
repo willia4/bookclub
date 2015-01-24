@@ -76,6 +76,39 @@ end
   end
 end
 
+get '/meetings' do
+  @page_state[:page_title] = "Meetings"
+  meetings = Database::Meetings.list_meetings
+
+  meetings = meetings.map do |m|
+    b = m.selected_book_id.nil? ? nil : Database::Books.find_book_by_book_id(m.selected_book_id)
+    nominations = nil
+
+    if !b
+      nominations = m.nominated_book_ids.map {|book_id| Database::Books.find_book_by_book_id(book_id) }
+      nominations = nominations.map {|b| {:title => b.title, :cover => b.image_url} }
+    end
+
+    {
+      :date => m.date,
+      :time => m.time,
+      :location => m.location,
+      :url => "/meetings/meeting/" + m.meeting_id,
+
+      :selected_book => b.nil? ? nil : b.title,
+      :selected_book_cover => b.nil? ? nil : b.image_url,
+
+      :nominations => nominations
+    }
+  end
+
+  today = Date.today
+  @past_meetings = meetings.select { |m| m[:date] < today } .sort { |a,b| a[:date] <=> b[:date] }
+  @future_meetings = meetings.select { |m| m[:date] >= today } .sort { |a,b| a[:date] <=> b[:date] }
+
+  erb :meetings
+end
+
 get '/meetings/add' do
   @page_state[:page_title] = "Add a meeting"
   erb :meeting_add
@@ -118,9 +151,9 @@ end
 
 get '/meetings/meeting/:id' do |id|
   @meeting = Database::Meetings.find_meeting_by_meeting_id id
-  @page_state[:page_title] = "#{@meeting.date} Meeting"
-
   raise NotFoundError.new("load the requested meeting", "The meeting could not be found") if @meeting.nil?
+
+  @page_state[:page_title] = "#{@meeting.date} Meeting"
 
   if @meeting.selected_book_id.nil? || @meeting.selected_book_id == "" 
     @selected_book = nil
