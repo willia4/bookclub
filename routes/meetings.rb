@@ -94,13 +94,6 @@ post '/meetings/add' do
     return JSON.pretty_generate({"field" => "meeting_date", "message" => "Unable to parse meeting date as a date"})
   end
 
-  #todo past meetings would be nice but it would be useless until I have a way to pick a book directly
-  if date < Date.today
-    status 400
-    content_type :json, 'charset' => 'utf-8'
-    return JSON.pretty_generate({"field" => "meeting_date", "message" => "Cannot add past meetings"})
-  end
-
   #todo make this optional
   books = Database::Books.list_unread_books
   books = books.sample(5)
@@ -152,13 +145,6 @@ post '/meetings/meeting/:id/edit' do |id|
     status 400
     content_type :json, 'charset' => 'utf-8'
     return JSON.pretty_generate({"field" => "meeting_date", "message" => "Unable to parse meeting date as a date"})
-  end
-
-  #todo past meetings would be nice but it would be useless until I have a way to pick a book directly
-  if date < Date.today
-    status 400
-    content_type :json, 'charset' => 'utf-8'
-    return JSON.pretty_generate({"field" => "meeting_date", "message" => "Cannot add past meetings"})
   end
 
   meeting.date = date.to_s

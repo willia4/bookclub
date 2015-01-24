@@ -41,7 +41,8 @@ $(document).ready(function () {
 			{
 				format: "mm/dd/yyyy",
 				onRender: function(date) {
-					return date < today ? 'disabled' : '';
+					return '';
+					// return date < today ? 'disabled' : '';
 				}
 			});
 
@@ -153,7 +154,6 @@ $(document).ready(function () {
 			
 			clearErrors();
 			valid = errorForControl(meetingDateFormEl, "Date is required", !meetingDate) && valid;
-			valid = errorForControl(meetingDateFormEl, "Date cannot be in the past", meetingDate && meetingDate < Date.today().clearTime()) && valid;
 
 			return valid;
 		}

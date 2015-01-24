@@ -44,7 +44,8 @@ $(document).ready(function () {
 		{
 			format: "mm/dd/yyyy",
 			onRender: function(date) {
-				return date < today ? 'disabled' : '';
+				// return date < today ? 'disabled' : '';
+				return '';
 			}
 		});
 	$("#add-meeting-time").val('5:30ish');
@@ -65,7 +66,6 @@ $(document).ready(function () {
 			removeErrorsFromControls();
 
 			valid = errorForControl($("#add-meeting-date-group"), "Date is required", !meetingDate) && valid;
-			valid = errorForControl($("#add-meeting-date-group"), "Date cannot be in the past", meetingDate && meetingDate < Date.today().clearTime()) && valid;
 			
 			return valid;
 		}
