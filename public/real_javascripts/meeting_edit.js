@@ -49,6 +49,12 @@ $(document).ready(function () {
 		meetingTimeFormEl.val(originalValues.time);
 		meetingTimeEl.replaceWith(meetingTimeFormEl);
 
+		//If the un-edited meeting doesn't have a time, we don't draw the "@" between the date and time. But it looks better in form-view with it
+		//So add it back if necessary 
+		if(!originalValues.time) {
+			$("#meeting-time-symbol").html("@ ");
+		}
+
 		meetingLocationFormEl = $('<input class="form-control" id="edit-meeting-location" placeholder="Location" type="text"/>');
 		meetingLocationFormEl.val(originalValues.location);
 		meetingLocationEl.replaceWith(meetingLocationFormEl);
@@ -60,6 +66,12 @@ $(document).ready(function () {
 		meetingDateFormEl.replaceWith(meetingDateEl);
 		meetingTimeFormEl.replaceWith(meetingTimeEl);
 		meetingLocationFormEl.replaceWith(meetingLocationEl);
+
+		//If the un-edited meeting doesn't have a time, we added the "@" between the date and time form elements. But now we need to get rid of it 
+		//again
+		if(!originalValues.time) {
+			$("#meeting-time-symbol").html("");
+		}
 
 		meetingDateFormEl = null;
 		meetingTimeFormEl = null;
