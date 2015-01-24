@@ -50,7 +50,7 @@ $(document).ready(function () {
 		meetingTimeEl.replaceWith(meetingTimeFormEl);
 
 		meetingLocationFormEl = $('<input class="form-control" id="edit-meeting-location" placeholder="Location" type="text"/>');
-		meetingLocationEl.val(originalValues.location);
+		meetingLocationFormEl.val(originalValues.location);
 		meetingLocationEl.replaceWith(meetingLocationFormEl);
 	}
 
