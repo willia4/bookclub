@@ -55,7 +55,8 @@ $(document).ready(function () {
 
 		var meetingDate = Date.parse($("#add-meeting-date").val()),
 			meetingTime = $("#add-meeting-time").val(),
-			meetingLocation = $("#add-meeting-location").val();
+			meetingLocation = $("#add-meeting-location").val(),
+			addRandomNominations = $("#add-meeting-random").is(':checked');
 
 		meetingDate = meetingDate ? meetingDate.clearTime() : null;
 
@@ -80,7 +81,8 @@ $(document).ready(function () {
 				data: {
 					meeting_date: meetingDate,
 					meeting_time: meetingTime,
-					meeting_location: meetingLocation
+					meeting_location: meetingLocation,
+					add_random_nominations: addRandomNominations
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
 					var jsonData = null;

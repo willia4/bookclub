@@ -85,6 +85,7 @@ post '/meetings/add' do
   date = Sanitize.fragment(params[:meeting_date], Sanitize::Config::RESTRICTED)
   time = Sanitize.fragment(params[:meeting_time], Sanitize::Config::RESTRICTED)
   location = Sanitize.fragment(params[:meeting_location], Sanitize::Config::RESTRICTED)
+  add_random_nominations = (params[:add_random_nominations] == "true")
 
   begin
     date = Date.parse(date)
@@ -94,15 +95,16 @@ post '/meetings/add' do
     return JSON.pretty_generate({"field" => "meeting_date", "message" => "Unable to parse meeting date as a date"})
   end
 
-  #todo make this optional
-  books = Database::Books.list_unread_books
-  books = books.sample(5)
-
   newMeeting = Models::Meeting.new
   newMeeting.date = date.to_s
   newMeeting.time = time
   newMeeting.location = location
-  newMeeting.nominated_book_ids = books.map { |b| b.book_id }
+  
+  if add_random_nominations
+    books = Database::Books.list_unread_books
+    books = books.sample(5)
+    newMeeting.nominated_book_ids = books.map { |b| b.book_id }
+  end
 
   Database::Meetings.save_meeting(newMeeting)
 
