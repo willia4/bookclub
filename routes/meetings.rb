@@ -103,7 +103,11 @@ get '/meetings' do
   end
 
   today = Date.today
-  @past_meetings = meetings.select { |m| m[:date] < today } .sort { |a,b| a[:date] <=> b[:date] }
+  @past_meetings = meetings
+                    .select { |m| m[:date] < today } 
+                    .sort { |a,b| a[:date] <=> b[:date] }
+                    .reverse 
+                    
   @future_meetings = meetings
                       .select { |m| m[:date] >= today } 
                       .sort { |a,b| a[:date] <=> b[:date] } 
