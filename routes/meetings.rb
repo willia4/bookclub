@@ -67,10 +67,12 @@ def get_json_nominated_books_for_meeting(meeting)
 end
 
 [:get, :post].each do |method|
-  send method, '/meetings/add' do
-    pass if @session_state[:user_profile].user_status == 'admin'
+  ['/meetings/add', '/meetings/meeting/:id/edit'].each do |route|
+    send method, route do
+      pass if @session_state[:user_profile].user_status == 'admin'
 
-    raise AuthorizationError.new("access admin area", "Only administrators may access admin functionality")
+      raise AuthorizationError.new("access admin area", "Only administrators may access admin functionality")
+    end
   end
 end
 
@@ -79,9 +81,9 @@ get '/meetings/add' do
 end
 
 post '/meetings/add' do
-  date = Sanitize.fragment(params[:meeting_date], Sanitize::Config::RELAXED)
-  time = Sanitize.fragment(params[:meeting_time], Sanitize::Config::RELAXED)
-  location = Sanitize.fragment(params[:meeting_location], Sanitize::Config::RELAXED)
+  date = Sanitize.fragment(params[:meeting_date], Sanitize::Config::RESTRICTED)
+  time = Sanitize.fragment(params[:meeting_time], Sanitize::Config::RESTRICTED)
+  location = Sanitize.fragment(params[:meeting_location], Sanitize::Config::RESTRICTED)
 
   begin
     date = Date.parse(date)
@@ -97,8 +99,6 @@ post '/meetings/add' do
     content_type :json, 'charset' => 'utf-8'
     return JSON.pretty_generate({"field" => "meeting_date", "message" => "Cannot add past meetings"})
   end
-
-  known_meetings = Database::Meetings.list_meetings
 
   #todo make this optional
   books = Database::Books.list_unread_books
@@ -133,6 +133,39 @@ get '/meetings/meeting/:id' do |id|
   end
 
   erb :meeting
+end
+
+post '/meetings/meeting/:id/edit' do |id|
+  meeting = Database::Meetings.find_meeting_by_meeting_id id
+  raise NotFoundError.new("edit the requested meeting", "The meeting could not be found") if meeting.nil?
+
+  date = Sanitize.fragment(params[:meeting_date], Sanitize::Config::RESTRICTED)
+  time = Sanitize.fragment(params[:meeting_time], Sanitize::Config::RESTRICTED)
+  location = Sanitize.fragment(params[:meeting_location], Sanitize::Config::RESTRICTED)
+
+  begin
+    date = Date.parse(date)
+  rescue ArgumentError
+    status 400
+    content_type :json, 'charset' => 'utf-8'
+    return JSON.pretty_generate({"field" => "meeting_date", "message" => "Unable to parse meeting date as a date"})
+  end
+
+  #todo past meetings would be nice but it would be useless until I have a way to pick a book directly
+  if date < Date.today
+    status 400
+    content_type :json, 'charset' => 'utf-8'
+    return JSON.pretty_generate({"field" => "meeting_date", "message" => "Cannot add past meetings"})
+  end
+
+  meeting.date = date.to_s
+  meeting.time = time
+  meeting.location = location
+
+  Database::Meetings.save_meeting(meeting)
+  status 200
+  content_type :json, 'charset' => 'utf-8'
+  "{}"
 end
 
 get '/meetings/meeting/:meeting_id/books' do |meeting_id|

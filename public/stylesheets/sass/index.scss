@@ -2,6 +2,10 @@ body {
 	color: #130f30;
 }
 
+.hidden {
+	display: none;
+}
+
 .invisible {
 	visibility: invisible;
 }
@@ -10,6 +14,12 @@ body {
 	max-height: 24px;
 	margin-bottom: 5px;
 	margin-right: 5px;
+}
+
+.spinner {
+	max-height: 24px;
+	margin-bottom: 5px;
+	margin-right: 5px;	
 }
 
 .page-title {

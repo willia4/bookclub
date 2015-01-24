@@ -1,5 +1,6 @@
 <% content_for :extra_css do %>
 <link rel="stylesheet" type="text/css" href="/stylesheets/meeting.css" />
+<link rel="stylesheet" type="text/css" href="/stylesheets/datepicker.css" />
 <% end %>
 
 <% content_for :extra_javascript do %>
@@ -66,24 +67,43 @@
 <script src="/javascripts/jquery-css-transform.js"></script>
 <script src="/javascripts/jquery.quicksand.js"></script>
 <script src="/javascripts/bootbox.js"></script>
+<script src="/javascripts/date.js"></script>
+<script src="/javascripts/bootstrap-datepicker.js"></script>
 <script src="/javascripts/handlebars-v2.0.0.js"></script>
 <script src="/javascripts/meeting.js"></script>
+<script src="/javascripts/meeting_edit.js"></script>
 <% end %>
 
-<div id="meeting-container" class="container" data-meeting-id="<%= @meeting.meeting_id %>" data-meeting-selected-book-id="<%= @meeting.selected_book_id %>">
+<div id="meeting-container" class="container" 
+		data-meeting-id="<%= @meeting.meeting_id %>" 
+		data-meeting-selected-book-id="<%= @meeting.selected_book_id %>"
+		data-meeting-date="<%= @meeting.date.strftime("%m/%d/%Y") %>"
+		data-meeting-time="<%= @meeting.time %>"
+		data-meeting-location="<%= @meeting.location %>">
+
 	<div class="row">
 		<div class="col-sm-12 page-title"><div><img id="page-spinner" class="invisible" src="/images/spinner.gif"/>Meeting</div></div>
 	</div>
+	
 	<div class="row">
 		<div id="sidebar" class="col-md-4">
 			<div class="row">
 				<div class="col-xs-12 col-sm-9 sidebar-title"><div>Details</div></div>
 			</div>
 			<div class="row">
-				<div class="col-xs-12 meeting-date"><%= @meeting.date.strftime("%A - %b %d, %Y") %> @ <%= @meeting.time %></div>		
+				<div id="validation-errors" class="col-xs-12 col-sm-9"></div>
 			</div>
 			<div class="row">
-				<div class="col-sm-12 meeting-location"><%= @meeting.location %></div>
+				<div class="col-xs-12 meeting-date">
+					<div id="meeting-date-group" class="form-group"><div id="meeting-date"><%= @meeting.date.strftime("%A - %b %d, %Y") %></div></div>
+					 @ 
+					 <div id="meeting-time-group" class="form-group"><div id="meeting-time"><%= @meeting.time %></div></div>
+				</div>		
+			</div>
+			<div class="row">
+				<div class="col-sm-12 meeting-location">
+					<div id="meeting-location-group" class="form-group"><div id="meeting-location"><%= @meeting.location %></div></div>
+				</div>
 			</div>
 		</div>
 		<div id="main-content" class="col-md-8">
@@ -92,7 +112,7 @@
 				<div class="col-sm-12 content-title"><div>Nominations</div></div>
 			</div>
 			<ul class="book-list">
-			
+				<img class="spinner" src="/images/spinner.gif"/>
 			</ul>
 			<% elsif !@selected_book.nil? %>
 			<div class="row">
@@ -121,4 +141,14 @@
 			<% end %>
 		</div>
 	</div>
+
+	<% if @session_state[:show_admin] %>
+	<div class="row">
+		<div class="col-sm-12">
+			<button id="edit-meeting-button" class="btn btn-default">Edit Meeting</button>
+			<button id="edit-meeting-save-button" class="btn btn-primary hidden">Save</button>
+			<button id="edit-meeting-cancel-button" class="btn btn-default hidden">Cancel</button>
+		</div>
+	</div>
+	<% end %>
 </div>

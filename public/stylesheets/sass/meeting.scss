@@ -23,3 +23,56 @@
 .summary {
 	margin-bottom: 30px;
 }
+
+.meeting-date {
+	> div {
+		display: inline;
+	}
+}
+
+#meeting-date-group, #meeting-time-group, #meeting-date, #meeting-time {
+	display: inline;
+}
+
+#meeting-location-group {
+	display: block;
+}
+
+#edit-meeting-date {
+	width: 100px;
+	display: inline;
+}
+
+#edit-meeting-time {
+	width: 100px;
+	display: inline;
+}
+
+#edit-meeting-location {
+	width: 220px;
+	margin-top: 15px;
+	display: block;
+}
+
+#main-content {
+	overflow: hidden;
+}
+
+.book-list {
+	.overlay {
+		position: absolute;
+		left: -15px;
+		top: 0px;
+		height: 100%;
+		width: 200%;
+
+		background-color: #232323;
+		opacity: 0;
+		transition: all 0.5s;
+		-webkit-transition: all 0.5s;
+	}
+
+	.overlay.on {
+		opacity: 0.4;
+	}
+}
