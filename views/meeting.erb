@@ -94,6 +94,15 @@
 			<div class="row">
 				<div id="validation-errors" class="col-xs-12 col-sm-9"></div>
 			</div>
+			<% if @session_state[:show_admin] %>
+			<div class="row">
+				<div class="col-sm-12 edit-buttons">
+					<button id="edit-meeting-button" class="btn btn-default">Edit Meeting</button>
+					<button id="edit-meeting-save-button" class="btn btn-primary hidden">Save</button>
+					<button id="edit-meeting-cancel-button" class="btn btn-default hidden">Cancel</button>
+				</div>
+			</div>
+			<% end %>
 			<div class="row">
 				<div class="col-xs-12 meeting-date">
 					<div id="meeting-date-group" class="form-group"><div id="meeting-date"><%= @meeting.date.strftime("%A - %b %d, %Y") %></div></div>
@@ -147,14 +156,4 @@
 			<% end %>
 		</div>
 	</div>
-
-	<% if @session_state[:show_admin] %>
-	<div class="row">
-		<div class="col-sm-12">
-			<button id="edit-meeting-button" class="btn btn-default">Edit Meeting</button>
-			<button id="edit-meeting-save-button" class="btn btn-primary hidden">Save</button>
-			<button id="edit-meeting-cancel-button" class="btn btn-default hidden">Cancel</button>
-		</div>
-	</div>
-	<% end %>
 </div>
