@@ -70,10 +70,13 @@ get '/signin/facebook/finish' do
 
     Database::UserProfiles.save_user_profile(profile)
 
-    admin_profiles.each do |admin|
-      APIs::Email.send_mail(admin.email, "A New User Has Signed Up", "#{profile.full_name} has signed up for BB Bookclub. Please moderate their account.")
+    begin
+      admin_profiles.each do |admin|
+        APIs::Email.send_mail(admin.email, "#{$config[:general][:site_name]} - A New User Has Signed Up", "#{profile.full_name} has signed up for BB Bookclub. Please moderate their account.")
+      end
+    rescue
     end
-    
+
   end
   
   #facebook can give us a new token at their leisure. We should use the new one if it was changed.
