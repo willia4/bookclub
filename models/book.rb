@@ -4,7 +4,7 @@ include ActionView::Helpers::DateHelper
 module Models
   class Book
     def self.sdb_properties
-      ["book_id", "title", "author", "summary_key", "image_url", "external_url", "read", "rejected", "date_added"]
+      ["book_id", "title", "author", "summary_key", "image_url", "external_url", "read", "rejected", "date_added", "addedby_id"]
     end
 
     attr_accessor :book_id
@@ -16,6 +16,7 @@ module Models
     attr_accessor :external_url
     attr_accessor :read
     attr_accessor :rejected
+    attr_accessor :addedby_id
 
     #these are not filled in when loading a book but are there for the convenience of other methods
     attr_accessor :votes
@@ -90,7 +91,7 @@ module Models
       r = Book.new
       h = JSON.parse(json_string)
 
-      defaults = {"rejected" => "false"}
+      defaults = {"rejected" => "false", "addedby_id" => ""}
 
       Book.sdb_properties.each do |p|
         if not h.keys.include?(p)

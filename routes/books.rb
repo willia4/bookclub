@@ -62,7 +62,8 @@ post '/books/add' do
   book.author = author
   book.external_url = external_url
   book.summary = summary 
-  
+  book.addedby_id = @session_state[:user_profile].user_id
+
   if !image_url.nil? && !image_url.empty? 
     book.image_url = Database::S3.upload_url(image_url)
   end
