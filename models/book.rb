@@ -4,7 +4,7 @@ include ActionView::Helpers::DateHelper
 module Models
   class Book
     def self.sdb_properties
-      ["book_id", "title", "author", "summary_key", "image_url", "external_url", "read", "date_added"]
+      ["book_id", "title", "author", "summary_key", "image_url", "external_url", "read", "rejected", "date_added"]
     end
 
     attr_accessor :book_id
@@ -15,6 +15,7 @@ module Models
     attr_accessor :image_url
     attr_accessor :external_url
     attr_accessor :read
+    attr_accessor :rejected
 
     #these are not filled in when loading a book but are there for the convenience of other methods
     attr_accessor :votes
@@ -26,6 +27,14 @@ module Models
 
     def read
       @read ? "true" : "false"
+    end
+
+    def rejected=(rejected)
+      @rejected = ((rejected == "true") || (rejected == "yes") || (rejected == true))
+    end
+
+    def rejected
+      @rejected ? "true" : "false"
     end
 
     #store date_added as a Time but treat it as a string for the outside world
@@ -77,12 +86,19 @@ module Models
       r = Book.new
       h = JSON.parse(json_string)
 
+      defaults = {"rejected" => "false"}
+
       Book.sdb_properties.each do |p|
-        raise "Invalid JSON for Modules::Book" if not h.keys.include?(p)
+        if not h.keys.include?(p)
+          raise "Invalid JSON for Modules::Book" if not defaults.keys.include?(p)
+          value = defaults[p]
+        else
+          value = h[p]
+        end
 
         method_name = p + "="
         
-        r.send(method_name, h[p])
+        r.send(method_name, value)
       end
 
       r.summary = h["summary"]

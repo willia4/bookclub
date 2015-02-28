@@ -5,6 +5,16 @@ require './database/database.rb'
 require './models/book.rb'
 require './exceptions/AppError.rb'
 
+get '/books' do
+  books = Database::Books.list_books
+
+  @unread = books.select { |b| b.read === "false" && b.rejected === "false" }
+  @read = books.select { |b| b.read === "true" }
+  @rejected = books.select { |b| b.rejected === "true" }
+
+  erb :books
+end
+
 get '/books/add' do 
   @page_state[:page_title] = "Nominate a book"
   erb :book_add
