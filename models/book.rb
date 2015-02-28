@@ -23,6 +23,8 @@ module Models
 
     def read=(read)
       @read = ((read == "true") || (read == "yes") || (read == true))
+
+      @rejected = false if @read
     end
 
     def read
@@ -31,6 +33,8 @@ module Models
 
     def rejected=(rejected)
       @rejected = ((rejected == "true") || (rejected == "yes") || (rejected == true))
+
+      @read = false if @rejected
     end
 
     def rejected
