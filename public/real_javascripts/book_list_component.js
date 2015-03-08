@@ -20,22 +20,18 @@
 			parent.html(template(data));
 		}
 
-		settings = $.extend({}, $.fn.book_list.defaults, options);
 		if (!settings.getUrl && !settings.initialState) {
 			throw "Caller must specify url to GET books from or provide an initial state"
 		}
-
-		if(settings.showSpinnerCallback) {
-			settings.showSpinnerCallback.apply(parent);
-		}
-
-		template = $("#" + settings.templateId).text();
-		template = Handlebars.compile(template);
 
 		if (settings.initialState) {
 			renderBooksInParent(settings.initialState);
 		}
 		else {
+			if(settings.showSpinnerCallback) {
+				settings.showSpinnerCallback.apply(parent);
+			}
+
 			$.ajax({
 				url: settings.getUrl,
 				type: "GET",
