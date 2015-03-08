@@ -2,50 +2,68 @@
 //and is not self-supporting.
 
 (function ($) {
+
 	$.fn.book_list = function (options) {
-		var settings = $.extend({}, $.fn.book_list.defaults, options);
-		if (!settings.getUrl) {
-			throw "Caller must specify url to GET books from"
+		var settings = $.extend({}, $.fn.book_list.defaults, options), 
+			parent = this, 
+			template = Handlebars.compile($("#" + settings.templateId).text());
+
+		function renderBooksInParent(books) {
+			var data = {};
+			if (books.hasOwnProperty(settings.collectionName)) {
+				data = books;
+			}
+			else {
+				data[settings.collectionName] = books;
+			}
+
+			parent.html(template(data));
 		}
 
-		var parent = this;
+		settings = $.extend({}, $.fn.book_list.defaults, options);
+		if (!settings.getUrl && !settings.initialState) {
+			throw "Caller must specify url to GET books from or provide an initial state"
+		}
 
 		if(settings.showSpinnerCallback) {
 			settings.showSpinnerCallback.apply(parent);
 		}
 
-		var template = $("#" + settings.templateId).text();
+		template = $("#" + settings.templateId).text();
 		template = Handlebars.compile(template);
 
-		$.ajax({
-			url: settings.getUrl,
-			type: "GET",
-			dataType: "json",
-			success: function (books) {
-				var data = {}
-				data[settings.collectionName] = books;
+		if (settings.initialState) {
+			renderBooksInParent(settings.initialState);
+		}
+		else {
+			$.ajax({
+				url: settings.getUrl,
+				type: "GET",
+				dataType: "json",
+				success: function (books) {
+					renderBooksInParent(books);
+					
+					if(settings.hideSpinnerCallback) {
+						settings.hideSpinnerCallback(parent);
+					}
+				},
+				error: function (xhr, status, errorThrown) {
+					if(settings.hideSpinnerCallback) {
+						settings.hideSpinnerCallback(parent);
+					}
 
-				var html = template(data);
-				parent.html(html);
-
-				if(settings.hideSpinnerCallback) {
-					settings.hideSpinnerCallback(parent);
+					throw errorThrown;
 				}
-			},
-			error: function (xhr, status, errorThrown) {
-				if(settings.hideSpinnerCallback) {
-					settings.hideSpinnerCallback(parent);
-				}
-
-				throw errorThrown;
-			}
-		})
+			});
+		}
+		
 
 		return parent;
 	};
 
 	$.fn.book_list.defaults = {
 		getUrl: null,
+		initialState: null,
 		showSpinnerCallback: null,
 		hideSpinnerCallback: null,
 		templateId: "book-list-template",
