@@ -1,3 +1,17 @@
+<% content_for :extra_javascript do %>
+<script src="/javascripts/handlebars-v2.0.0.js"></script>
+<script src="/javascripts/book_list_component.js"></script>
+
+<%= erb :_book_list_template, :locals => {:template_options => {:voting => false}} %>
+
+<script>
+$(document).ready(function () { 
+	$(".book-list").book_list({getUrl: "/books/unread.json"});
+});
+</script>
+
+<% end %>
+
 <div class="container">
 	<div class="row">
 		<div class="col-xs-12 page-title"><div>Welcome to your bookclub, <%= @session_state[:user_profile].casual_name %></div></div>
@@ -64,37 +78,9 @@
 				</div>
 				<div class="col-xs-0 col-sm-3"><!--spacer--></div>
 			</div>
-			
-			<ul class="book-list">
-				<% @unread_books.each do |book| %>
-				<li class="row book-listing" data-id="<%= book.book_id %>">
-					<div class="col-sm-12">
-						<div class="row">
-							<div class="col-sm-2">
-								<% if book.image_url && !book.image_url.empty? %>
-								<a href="<%= book.book_url %>"><img class="book-image" src="<%= book.image_url %>" /></a>
-								<% end %>
-							</div>
-							<div class="col-sm-offset-1 col-sm-9">
-								<div class="row">
-									<div class="col-xs-12 book-title"><a href="<%= book.book_url %>"><%= book.title %></a></div>
-								</div>
-								<div class="row">
-									<div class="col-xs-12 book-author"><%= book.author %></div>
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<% date_added = Time.parse(book.date_added).getlocal
-							  today = Time.now.getlocal %>
-							<div class="col-sm-offset-7 col-sm-5 book-date-added" title="<%= date_added.strftime("%Y-%b-%d @ %I:%M%P %Z") %>">
-								Added <%= (date_added.year == today.year && date_added.month == today.month && date_added.day == today.day) ? "today" : book.age + " ago" %>
-							</div>
-						</div>
-					</div>
-				</li>
-				<% end %>
-			</ul>
+
+			<ul class="book-list"></ul>
+
 			<div class="row">
 				<div class="col-sm-10 col-xs-12"></div>
 				<div class="col-sm-2 col-xs-0"></div>

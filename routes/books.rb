@@ -109,3 +109,29 @@ get '/books/goodreads/info/:id' do |id|
   content_type :json, 'charset' => 'utf-8'
   JSON.pretty_generate(data)
 end
+
+get '/books/unread.json' do 
+  content_type :json, 'charset' => 'utf-8'
+  books = Database::Books.list_unread_books()
+
+  books = books.map do |book| 
+    date_added = Time.parse(book.date_added).getlocal
+    today = Time.now.getlocal
+
+    age =  (date_added.year == today.year && date_added.month == today.month && date_added.day == today.day) ? "today" : (book.age + " ago")
+
+    {
+      "book_id" => book.book_id,
+      "book_url" => book.book_url,
+      "title" => book.title,
+      "author" => book.author,
+      "image_url" => book.image_url,
+      "addedby_id" => book.addedby_id,
+      "date_added" => date_added,
+      "date_added_formatted" => date_added.strftime("%Y-%b-%d @ %I:%M%P %Z"),
+      "age_statement" => age,
+    }
+  end
+
+  JSON.pretty_generate(books)
+end
