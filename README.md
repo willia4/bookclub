@@ -48,7 +48,7 @@ For convenience and distribution, the Vagrant files are currently checked in to 
 the source tree itself (since the source tree will live inside the Vagrant box). 
 
 1. Create a directory for the project. For example: `mkdir ~/projects/vagrant_bookclub`
-2. Download the contents of the /misc/vagrant directory into your project directory
+2. Download the contents of the [/misc/vagrant](https://github.com/willia4/bookclub/tree/master/misc/vagrant/provision) directory into your project directory
 3. Confirm that the contents of your project directory are a `Vagrantfile` and a `provision` directory with several scripts and configuration files
 
 ### Step 3 - Examine the Vagrant files
