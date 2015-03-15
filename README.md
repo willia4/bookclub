@@ -86,7 +86,7 @@ From the project directory, you can use the `vagrant ssh` command to bring up an
 Before running `irb` or other ruby commands, you will need to ask rvm to change your environment to the correct ruby version. You will do this to follow the next steps to install the 
 necessary ruby gems. 
 
-1. From a "real" command prompt, change into your project directory and enter the `vagrant ssh` command to open an SSH shell into the virtual machine.
+1. From a "real" command prompt, change into your project directory and enter the `vagrant ssh` command to open an SSH shell into the virtual machine
 2. Change into the virtual source directory with `cd /www/bookclub`
 3. Switch to the correct ruby environment with `rvm use 2.1.3`
 4. In the `/www/bookclub` directory, install the needed gems by running `bundle install`
@@ -99,7 +99,21 @@ will not be prompted for a password.
 You can access the site now at [http://localhost:8080/](http://localhost:8080/) but you will see an error that the `secrets.yaml` file is missing. This is because the site 
 still requires configuration. Follow the instructions below in the **Configuration** section.
 
-### Step 8 - Test the site
+### Step 8 - Init SDB
+
+Now that you have confingured Amazon's web services, SDB needs to be initailized. You can do this from inside the Vagrant box.
+
+1. From a "real" command prompt, change into your project directory and enter the `vagrant ssh` command to open an SSH shell into the virtual machine
+2. Change into the virtual source directory with `cd /www/bookclub`
+3. Switch to the correct ruby environment with `rvm use 2.1.3`
+4. Start the interactive ruby interpreter with `irb`
+5. In irb, load YAML with `require "yaml"` - ruby should return `=> true`
+6. In irb, load your configuration with `$config = YAML::load(File.open("secrets.yaml"))` - ruby should return a hash of your secrets file
+7. In irb, load the Database module with `load "./Database/Database.rb"` -- ruby should return `=> true`
+8. In irb, init AWS with `Database.init_amazon` -- ruby should return an array of SDB domains starting with your domain prefix
+
+
+### Step 9 - Test the site
 
 Once the site is configured, you should be able to access it at [http://localhost:8080/](http://localhost:8080/). (The port number is configurable in the Vagrantfile.)
 
