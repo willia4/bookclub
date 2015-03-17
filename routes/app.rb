@@ -30,6 +30,9 @@ before do
     :site_title => $config[:general][:site_name],
     :page_title => $config[:general][:site_name]
   }
+
+  # We miss you, Sir Terry. http://www.gnuterrypratchett.com/
+  response.headers['X-Clacks-Overhead'] = "GNU Terry Pratchett"
 end
 
 [:get, :post, :put, :delete].each do |method|
