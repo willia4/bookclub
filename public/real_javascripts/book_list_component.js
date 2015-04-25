@@ -4,7 +4,14 @@
 
 	$.fn.book_list = function (options) {
 		var settings = $.extend({}, $.fn.book_list.defaults, options), 
-			parent = this;
+			parent = this,
+			buttonCallbacks = {},
+			counter = 0;
+
+		function getNextInteger() {
+			counter++;
+			return counter;
+		}
 
 		function callbackWithContext(f) {
 			var context = {
@@ -69,17 +76,40 @@
 		}
 
 		function buttonColumnHtml(book, size) {
-			var html = '';
-			html += 'BUTTONS';
+			var html = '', i, button;
+
+			html += '<div class="col-sm-' + size + '" >';
+
+			$.each(settings.buttons, function (i, button) {
+				var buttonClass = "btn btn-" + button.type,
+					callbackIndex = getNextInteger();
+
+				if (button.customClass) {
+					buttonClass += " " + button.customClass;
+				}
+
+				buttonCallbacks[callbackIndex] = button.callback;
+
+				html += '<div class="row">';
+					html += '<div class="col-sm-12">';
+						html += '<button class="' + buttonClass + '" data-book-id="' + book.book_id + '" data-title="' + book.title + '" data-button-index="' + callbackIndex + '">';
+						html += button.title;
+						html += '</button>';
+					html += '</div>';
+				html += '</div>';
+			});
+
+			html += '</div>';
+			
 			return html;
 		}
 
 		function mainColumnHtml(book, size) {
 			var html = '',
 				allowsButtons = !!settings.buttons && settings.buttons.length > 0,
-				buttonsSize = allowsButtons ? 3 : 0;
-
-			size -= buttonsSize;
+				buttonsSize = allowsButtons ? 3 : 0,
+				imageSize = 2,
+				titleSize = 12 - buttonsSize - imageSize;
 
 			html += '<div class="col-sm-' + size + '">';
 			
@@ -93,7 +123,7 @@
 					html += '</div>'; //book image column
 
 					//title column
-					html += '<div class="col-sm-offset-1 col-sm-9">';
+					html += '<div class="col-sm-offset-1 col-sm-' + (titleSize - 1 /*subtract 1 to make up for the offset*/) + '">'; 
 						html += '<div class="row">';
 							html += '<div class="col-xs-12 book-title"><a href="' + book.book_url + '">' + book.title + '</a></div>';
 						html += '</div>';
@@ -271,12 +301,24 @@
 				$(".vote-button-up:not(.vote-selected)").on("click", voteUpHandler);
 				$(".vote-button-down:not(.vote-selected)").on("click", voteDownHandler);
 			}
-			if(settings.allowsRejection) {
-				$(".book-reject-button").on("click", rejectHandler);
-			}
-			if(settings.allowsSelection) {
-				$(".book-select-button").on("click", selectHandler);
-			}
+
+			var buttonElements = parent.find('button.btn[data-button-index!=""]');
+
+			buttonElements.each(function (i, button) {
+				var b = $(button),
+					callbackIndex = b.data("button-index"),
+					title = b.data("title"),
+					bookId = b.data("book-id"),
+					callback = buttonCallbacks[callbackIndex];
+
+				b.on("click", function () {
+					//TODO any setup before running the button handler? 
+
+					callbackWithContext(callback, bookId, title, function () {
+						//TODO any cleanup after running the button handler? 
+					});
+				});
+			});
 		}
 
 		function removeEventHandlers() { 
@@ -284,12 +326,7 @@
 				$(".vote-button-up:not(.vote-selected)").off("click");
 				$(".vote-button-down:not(.vote-selected)").off("click");
 			}
-			if(settings.allowsRejection) {
-				$(".book-reject-button").off("click");
-			}
-			if(settings.allowsSelection) {
-				$(".book-select-button").off("click");
-			}
+			
 		}
 
 		if (settings.initialState) {

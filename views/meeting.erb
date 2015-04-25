@@ -4,58 +4,6 @@
 <% end %>
 
 <% content_for :extra_javascript do %>
-<script id="book-nominations-template" type="text/x-handlebars-template">
-{{#each nominated_books}}
-<li class="row book-listing" data-id="{{book_id}}" data-title="{{title}}" data-votes="{{votes}}" data-user-vote="{{user_vote}}">
-	<div class="col-sm-1" style="font-size: 125%;">
-		<div class="row">
-			<div class="col-xs-12" style="text-align:center; font-weight: bold;">
-				<a href="#" class="vote-button vote-up-button {{#if upvoted}}vote-selected{{/if}}" data-id="{{book_id}}"><span class="glyphicon glyphicon-arrow-up"></span></a>
-			</div>
-		</div>
-		<div class="row"><div class="col-xs-12" style="text-align:center">{{votes}}</div></div>
-		<div class="row">
-			<div class="col-xs-12" style="text-align:center">
-				<a href="#" class="vote-button vote-down-button {{#if downvoted}}vote-selected{{/if}}" data-id="{{book_id}}"><span class="glyphicon glyphicon-arrow-down"></span></a>
-			</div>
-		</div>
-	</div>
-
-	<div class="col-sm-11">
-		<div class="row">
-			<div class="col-sm-2">
-				{{#if image_url}}
-				<a href="{{book_url}}"><img class="book-image" src="{{image_url}}" /></a>
-				{{/if}}
-			</div>
-			<div class="col-sm-offset-1 col-sm-6">
-				<div class="row">
-					<div class="col-xs-12 book-title"><a href="{{book_url}}">{{title}}</a></div>
-				</div>
-				<div class="row">
-					<div class="col-xs-12 book-author">{{author}}</div>
-				</div>
-			</div>
-			<div class="col-sm-3">
-				<% if @session_state[:show_admin] %>
-				<div class="row">
-					<div class="col-sm-12"><button class="btn btn-danger book-reject-button" data-book-id="{{book_id}}" data-title="{{title}}">Reject</button></div>
-				</div>
-				<div class="row">
-					<div class="col-sm-12"><button class="btn btn-success book-select-button" data-book-id="{{book_id}}" data-title="{{title}}">Select</button></div>
-				</div>
-				<% end %>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-sm-offset-7 col-sm-5 book-date-added" title="{{date_added_formatted}}">
-				Added {{age_statement}}
-			</div>
-		</div>
-	</div>
-</li>
-{{/each}}
-</script>
 
 <script type="text/javascript">
 	window.bbBookClub = {};
@@ -69,7 +17,6 @@
 <script src="/javascripts/bootbox.js"></script>
 <script src="/javascripts/date.js"></script>
 <script src="/javascripts/bootstrap-datepicker.js"></script>
-<script src="/javascripts/handlebars-v2.0.0.js"></script>
 <!-- <script src="/javascripts/meeting.js"></script> -->
 <script src="/javascripts/book_list_component.js"></script>
 <script src="/javascripts/meeting_edit.js"></script>
@@ -122,8 +69,26 @@
 					voteDown: makeVoteCallback("down")
 				},
 
-				allowsRejection: <%= @session_state[:show_admin] ? "true" : "false" %>,
-				allowsSelection: <%= @session_state[:show_admin] ? "true" : "false" %>
+				buttons: [
+					{
+						title: "Reject",
+						type: "danger",
+						customClass: "book-reject-button",
+						callback: function (bookId, title, completionCallback) {
+							alert("rejecting book " + bookId);
+							completionCallback();
+						}
+					},
+					{
+						title: "Select",
+						type: "success",
+						customClass: "book-select-button",
+						callback: function (bookId, title, completionCallback) {
+							alert("selecting book " + title);
+							completionCallback();
+						}
+					}
+				]
 		});
 	});
 </script>
