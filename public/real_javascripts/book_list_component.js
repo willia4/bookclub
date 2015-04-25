@@ -121,7 +121,7 @@
 		}
 
 		function bookHtml(book) {
-			var allowsVoting = settings.allowsVoting || false,
+			var allowsVoting = settings.votingCallbacks,
 				votingColumnSize = allowsVoting ? 1 : 0,
 				mainColumnSize = 12 - votingColumnSize,
 			 	html = '';
@@ -263,7 +263,7 @@
 		}
 
 		function addEventHandlers() {
-			if(settings.allowsVoting) {
+			if(settings.votingCallbacks) {
 				$(".vote-button-up:not(.vote-selected)").on("click", voteUpHandler);
 				$(".vote-button-down:not(.vote-selected)").on("click", voteDownHandler);
 			}
@@ -276,7 +276,7 @@
 		}
 
 		function removeEventHandlers() { 
-			if(settings.allowsVoting) {
+			if(settings.votingCallbacks) {
 				$(".vote-button-up:not(.vote-selected)").off("click");
 				$(".vote-button-down:not(.vote-selected)").off("click");
 			}
@@ -304,7 +304,6 @@
 		showSpinnerCallback: null,
 		hideSpinnerCallback: null,
 		collectionName: "books",
-		allowsVoting: false,
 		votingCallbacks: null,
 		meetingId: null,
 		buttons: null
