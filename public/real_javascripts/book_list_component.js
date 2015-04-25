@@ -228,12 +228,14 @@
 			removeEventHandlers();
 			showSpinner();
 
-			if (settings.votingCallbacks && settings.votingCallbacks.voteUp) {
-				callbackWithContext(settings.votingCallbacks.voteUp, bookId, function () {
-					hideSpinner();
-					addEventHandlers();
-				});
+			if (!settings.votingCallbacks || !settings.votingCallbacks.voteUp) {
+				throw "Voting requires a voteUp callback to be defined";
 			}
+
+			callbackWithContext(settings.votingCallbacks.voteUp, bookId, function () {
+				hideSpinner();
+				addEventHandlers();
+			});
 		}
 
 		function voteDownHandler(event) {
@@ -244,12 +246,14 @@
 			removeEventHandlers();
 			showSpinner();
 
-			if (settings.votingCallbacks && settings.votingCallbacks.voteDown) {
-				callbackWithContext(settings.votingCallbacks.voteDown, bookId, function () {
-					hideSpinner();
-					addEventHandlers();
-				});
+			if (!settings.votingCallbacks || !settings.votingCallbacks.voteDown) {
+				throw "Voting requires a voteDown callback to be defined";
 			}
+
+			callbackWithContext(settings.votingCallbacks.voteDown, bookId, function () {
+				hideSpinner();
+				addEventHandlers();
+			});
 		}
 
 		function rejectHandler(event) {
