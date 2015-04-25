@@ -312,10 +312,12 @@
 					callback = buttonCallbacks[callbackIndex];
 
 				b.on("click", function () {
-					//TODO any setup before running the button handler? 
+					removeEventHandlers();
+					showSpinner();
 
 					callbackWithContext(callback, bookId, title, function () {
-						//TODO any cleanup after running the button handler? 
+						addEventHandlers();
+						hideSpinner();
 					});
 				});
 			});
@@ -326,7 +328,11 @@
 				$(".vote-button-up:not(.vote-selected)").off("click");
 				$(".vote-button-down:not(.vote-selected)").off("click");
 			}
-			
+		
+			var buttonElements = parent.find('button.btn[data-button-index!=""]');
+			buttonElements.each(function (i, button) {
+				$(button).off('click');
+			});	
 		}
 
 		if (settings.initialState) {

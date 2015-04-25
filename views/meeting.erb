@@ -17,15 +17,93 @@
 <script src="/javascripts/bootbox.js"></script>
 <script src="/javascripts/date.js"></script>
 <script src="/javascripts/bootstrap-datepicker.js"></script>
-<!-- <script src="/javascripts/meeting.js"></script> -->
+
 <script src="/javascripts/book_list_component.js"></script>
 <script src="/javascripts/meeting_edit.js"></script>
 <script src="/javascripts/meeting_add_book.js"></script>
 
 <script type="text/javascript">
 	$(document).ready(function () { 
+		var meetingId = "<%= @meeting.meeting_id %>";
+
+		function rejectionHandler(bookId, title, completionCallback) {
+			var t = this;
+
+			bootbox.dialog({
+				title: "Reject Book",
+				message: "Are you sure you want to reject \"" + title + "\" from being considered for this meeting?",
+				buttons: {
+					no: {
+						label: "No",
+						className: "btn btn-primary",
+						callback: function () {
+							//the box will close on its own
+							completionCallback();
+						}
+					},
+					reject: {
+						label: "Reject",
+						className: "btn btn-danger",
+						callback: function () {
+							var url = "/meetings/meeting/" + meetingId + "/books/" + bookId;;
+
+							$.ajax({
+								type: 'DELETE',
+								dataType: 'json',
+								url: url,
+								error: function (jqXHR, textStatus, errorThrown) {
+									//TODO handle error
+									completionCallback();
+								},
+								success: function (data) {
+									t.reloadBooks(data, function () {
+										completionCallback();
+									});
+								}
+							});
+						}
+					}
+				}
+			});
+		}
+
+		function selectHandler(bookId, title, completionCallback) {
+			bootbox.dialog({
+				title: "Select Book",
+				message: "Are you sure you want to choose \"" + title + "\" for this meeting?",
+				buttons: {
+					no: {
+						label: "No",
+						className: "btn btn-primary",
+						callback: function () {
+							//the box will close on its own
+							completionCallback();
+						}
+					},
+					select: {
+						label: "Select",
+						className: "btn btn-success",
+						callback: function () {
+							var url = "/meetings/meeting/" + meetingId + "/books/" + bookId + "/select";;
+
+							$.ajax({
+								type: 'GET',
+								url: url,
+								error: function (jqXHR, textStatus, errorThrown) {
+									completionCallback();
+								},
+								success: function (data) {
+									document.location.reload(true);
+								}
+							});
+						}
+					}
+				}
+			});
+		}
+
 		function startVote(bookId, direction, callback) {
-			var url = '/meetings/meeting/' + "<%= @meeting.meeting_id %>" + '/books/' + bookId + '/vote/' + direction;; 
+			var url = '/meetings/meeting/' + meetingId + '/books/' + bookId + '/vote/' + direction;; 
 
 			$.ajax({
 				type: 'POST',
@@ -74,19 +152,13 @@
 						title: "Reject",
 						type: "danger",
 						customClass: "book-reject-button",
-						callback: function (bookId, title, completionCallback) {
-							alert("rejecting book " + bookId);
-							completionCallback();
-						}
+						callback: rejectionHandler
 					},
 					{
 						title: "Select",
 						type: "success",
 						customClass: "book-select-button",
-						callback: function (bookId, title, completionCallback) {
-							alert("selecting book " + title);
-							completionCallback();
-						}
+						callback: selectHandler
 					}
 				]
 		});
