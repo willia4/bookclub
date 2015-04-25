@@ -2,8 +2,6 @@
 <script src="/javascripts/handlebars-v2.0.0.js"></script>
 <script src="/javascripts/book_list_component.js"></script>
 
-<%= erb :_book_list_template, :locals => {:template_options => {:voting => false}} %>
-
 <script>
 $(document).ready(function () { 
 	$(".book-list").book_list({getUrl: "/books/unread.json"});

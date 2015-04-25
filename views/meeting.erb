@@ -70,9 +70,63 @@
 <script src="/javascripts/date.js"></script>
 <script src="/javascripts/bootstrap-datepicker.js"></script>
 <script src="/javascripts/handlebars-v2.0.0.js"></script>
-<script src="/javascripts/meeting.js"></script>
+<!-- <script src="/javascripts/meeting.js"></script> -->
+<script src="/javascripts/book_list_component.js"></script>
 <script src="/javascripts/meeting_edit.js"></script>
 <script src="/javascripts/meeting_add_book.js"></script>
+
+<script type="text/javascript">
+	$(document).ready(function () { 
+		function startVote(bookId, direction, callback) {
+			var url = '/meetings/meeting/' + "<%= @meeting.meeting_id %>" + '/books/' + bookId + '/vote/' + direction;; 
+
+			$.ajax({
+				type: 'POST',
+				url: url,
+				error: function (jqXHR, textStatus, errorThrown) {
+					//TODO report error
+					callback();
+				},
+				success: function (data) {
+					callback(data);
+				}
+			});
+		}
+
+		function makeVoteCallback(direction) {
+			return function (bookId, completionCallback) {
+				var t = this;
+				startVote(bookId, direction, function (newBooks) {
+					if (newBooks) {
+						t.reloadBooks(newBooks, function () {
+							completionCallback();		
+						});
+					}
+					else {
+						completionCallback();
+					}
+				});
+			};
+		}
+
+		$(".book-list").book_list(
+			{
+				initialState: bbBookClub.initialState,
+				collectionName: "nominated_books",
+				allowsVoting: true,
+				showSpinnerCallback: function () { $("#page-spinner").removeClass("invisible"); },
+				hideSpinnerCallback: function () { $("#page-spinner").addClass("invisible"); },
+
+				votingCallbacks: {
+					voteUp: makeVoteCallback("up"),
+					voteDown: makeVoteCallback("down")
+				},
+
+				allowsRejection: <%= @session_state[:show_admin] ? "true" : "false" %>,
+				allowsSelection: <%= @session_state[:show_admin] ? "true" : "false" %>
+		});
+	});
+</script>
 <% end %>
 
 <div id="meeting-container" class="container" 
