@@ -246,9 +246,22 @@ post '/meetings/meeting/:meeting_id/books/:book_id/vote/:direction' do |meeting_
   current_votes = current_votes.select { |v| v["book_id"] == book_id && v["user_profile_id"] == user_profile_id}
   current_vote = current_votes.size > 0 ? current_votes[0]["vote"] : 0
 
-  vote = direction == "up" ? 1 : direction == "down" ? -1 : 0
-  vote = vote + current_vote
-  vote = vote < -1 ? -1 : vote > 1 ? 1 : vote
+  #redit style voting: 
+  #if we are voting up and have already voted up, reset the vote to zero 
+  #if we are voting up and have not already voted up, set the vote to 1
+  #if we are voting down and have already voted down, reset the vote to zero
+  #if we are voting down and have not already voted down, set the vote to -1
+  if direction == "up" && current_vote > 0 
+    vote = 0
+  elsif direction == "up" && current_vote <= 0
+    vote = 1
+  elsif direction == "down" && current_vote < 0
+    vote = 0
+  elsif direction =="down" && current_vote >= 0
+    vote = -1
+  else
+    raise AppError.new("voting", "invalid voting logic detected - this is a bug; please report it", 500)
+  end
 
   Database::Meetings.record_vote_for_meeting(meeting_id, book_id, user_profile_id, vote)
 

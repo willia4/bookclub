@@ -277,7 +277,6 @@
 				});
 		}
 
-
 		function voteUpHandler(event) {
 			event.preventDefault();
 
@@ -314,20 +313,10 @@
 			});
 		}
 
-		function rejectHandler(event) {
-			event.preventDefault();
-			alert("reject");
-		}	
-
-		function selectHandler(event) {
-			event.preventDefault();
-			alert("select");
-		}
-
 		function addEventHandlers() {
 			if(settings.votingCallbacks) {
-				$(".vote-button-up:not(.vote-selected)").on("click", voteUpHandler);
-				$(".vote-button-down:not(.vote-selected)").on("click", voteDownHandler);
+				$(".vote-button-up").on("click", voteUpHandler);
+				$(".vote-button-down").on("click", voteDownHandler);
 			}
 
 			var buttonElements = parent.find('button.btn[data-button-index!=""]');
@@ -353,8 +342,8 @@
 
 		function removeEventHandlers() { 
 			if(settings.votingCallbacks) {
-				$(".vote-button-up:not(.vote-selected)").off("click");
-				$(".vote-button-down:not(.vote-selected)").off("click");
+				$(".vote-button-up").off("click");
+				$(".vote-button-down").off("click");
 			}
 		
 			var buttonElements = parent.find('button.btn[data-button-index!=""]');
