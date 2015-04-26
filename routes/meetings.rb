@@ -301,6 +301,8 @@ delete '/meetings/meeting/:meeting_id/books/:book_id' do |meeting_id, book_id|
   meeting.nominated_book_ids = meeting.nominated_book_ids.select {|n| n != book_id }
   Database::Meetings.save_meeting(meeting)
 
+  status 200
+  content_type :json, 'charset' => 'utf-8'
   get_json_nominated_books_for_meeting(meeting)
 end
 

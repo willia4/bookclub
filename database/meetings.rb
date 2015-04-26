@@ -43,6 +43,14 @@ module Database
       return meeting
     end
 
+    def self.find_meetings_for_book(book_id)
+      #unfortunately, books for a meeting are stored as a JSON blob; so we will have to examine every meeting. 
+      #might as well look for meetings where this is the selected book as well 
+      list_meetings.select do |meeting|
+        meeting.selected_book_id == book_id || meeting.nominated_book_ids.include?(book_id)
+      end
+    end
+
     def self.find_votes_for_meeting(meeting_id)
       votes = Redis.find_votes_for_meeting(meeting_id)
       return votes if !votes.nil?

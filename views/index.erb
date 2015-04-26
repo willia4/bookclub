@@ -1,10 +1,21 @@
 <% content_for :extra_javascript do %>
-<script src="/javascripts/handlebars-v2.0.0.js"></script>
+<script src="/javascripts/jquery.easing.1.3.js"></script>
+<script src="/javascripts/jquery-css-transform.js"></script>
+<script src="/javascripts/jquery.quicksand.js"></script>
+<script src="/javascripts/bootbox.js"></script>
 <script src="/javascripts/book_list_component.js"></script>
+<script src="/javascripts/reject_from_nominations.js"></script>
 
 <script>
 $(document).ready(function () { 
-	$(".book-list").bookList({getUrl: "/books/unread.json", sort: "desc"});
+
+	bbBookClub.setupBookListForRejectionFromNomination({
+		isAdmin: <%= @session_state[:show_admin] ? "true" : "false" %>,
+		userId: "<%= @session_state[:user_profile].user_id %>",
+		bookListJQueryElement: $(".book-list"),
+		showSpinnerCallback: function () { $("#page-spinner").removeClass("invisible"); },
+		hideSpinnerCallback: function () { $("#page-spinner").addClass("invisible"); },
+	});
 });
 </script>
 
@@ -12,7 +23,7 @@ $(document).ready(function () {
 
 <div class="container">
 	<div class="row">
-		<div class="col-xs-12 page-title"><div>Welcome to your bookclub, <%= @session_state[:user_profile].casual_name %></div></div>
+		<div class="col-xs-12 page-title"><div><img id="page-spinner" class="invisible" src="/images/spinner.gif"/>Welcome to your bookclub, <%= @session_state[:user_profile].casual_name %></div></div>
 	</div>
 	<div class="row">
 		<div id="sidebar" class="col-md-4">

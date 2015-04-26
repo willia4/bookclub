@@ -95,6 +95,10 @@ error do
     status e.status_code
   end
 
+  response.headers['X-Bookclub-Error-Action'] = error_state[:action]
+  response.headers['X-Bookclub-Error-Reason'] = error_state[:reason]
+  response.headers['X-Bookclub-Error-Title'] = error_state[:title]
+
   erb :error, :locals => {:error_state => error_state}
 end
 

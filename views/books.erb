@@ -3,27 +3,38 @@
 <% end %>
 
 <% content_for :extra_javascript do %>
-
+<script src="/javascripts/jquery.easing.1.3.js"></script>
+<script src="/javascripts/jquery-css-transform.js"></script>
+<script src="/javascripts/jquery.quicksand.js"></script>
+<script src="/javascripts/bootbox.js"></script>
 <script src="/javascripts/book_list_component.js"></script>
+<script src="/javascripts/reject_from_nominations.js"></script>
 
 <script type="text/javascript">
 	$(document).ready(function () {
-		$("#book-list-unread").bookList({
-			getUrl: "/books/unread.json",
-			sort: "desc"
+
+		bbBookClub.setupBookListForRejectionFromNomination({
+			isAdmin: <%= @session_state[:show_admin] ? "true" : "false" %>,
+			userId: "<%= @session_state[:user_profile].user_id %>",
+			bookListJQueryElement: $("#book-list-unread"),
+			showSpinnerCallback: function () { $("#unread-page-spinner").removeClass("invisible"); },
+			hideSpinnerCallback: function () { $("#unread-page-spinner").addClass("invisible"); },
 		});
 
 		$("#book-list-read").bookList({
 			getUrl: "/books/read.json",
-			sort: "asc"
+			sort: "asc",
+			showSpinnerCallback: function () { $("#read-page-spinner").removeClass("invisible"); },
+			hideSpinnerCallback: function () { $("#read-page-spinner").addClass("invisible"); },
 		});
 
-		<% if false %>
-		$("#book-list-rejected").bookList({
-			getUrl: "/books/rejected.json",
-			sort: "asc"
+		bbBookClub.setupBookListForUnrejectionFromNomination({
+			isAdmin: <%= @session_state[:show_admin] ? "true" : "false" %>,
+			userId: "<%= @session_state[:user_profile].user_id %>",
+			bookListJQueryElement: $("#book-list-rejected"),
+			showSpinnerCallback: function () { $("#rejected-page-spinner").removeClass("invisible"); },
+			hideSpinnerCallback: function () { $("#rejected-page-spinner").addClass("invisible"); },
 		});
-		<% end %>
 	});
 </script>
 <% end %>
@@ -34,28 +45,26 @@
 	</div>
 
 	<div class="row">
-		<div class="col-sm-12 content-title"><div>For Future Consideration</div></div>
+		<div class="col-sm-12 content-title"><div><img id="unread-page-spinner" class="invisible page-spinner" src="/images/spinner.gif"/>For Future Consideration</div></div>
 	</div>
 
 	<ul id="book-list-unread" class="book-list">
-		<img class="spinner" src="/images/spinner.gif"/>
+		<!-- <img class="spinner" src="/images/spinner.gif"/> -->
 	</ul>
 
 	<div class="row">
-		<div class="col-sm-12 content-title"><div>Read</div></div>
+		<div class="col-sm-12 content-title"><div><img id="read-page-spinner" class="invisible page-spinner" src="/images/spinner.gif"/>Read</div></div>
 	</div>
 
 	<ul id="book-list-read" class="book-list">
-		<img class="spinner" src="/images/spinner.gif"/>
+		<!-- <img class="spinner" src="/images/spinner.gif"/> -->
 	</ul>
 
-	<% if false %>
 	<div class="row">
-		<div class="col-sm-12 content-title"><div>Rejected</div></div>
+		<div class="col-sm-12 content-title"><div><img id="rejected-page-spinner" class="invisible page-spinner" src="/images/spinner.gif"/>Rejected</div></div>
 	</div>
 
 	<ul id="book-list-rejected" class="book-list">
-		<img class="spinner" src="/images/spinner.gif"/>
+		<!-- <img class="spinner" src="/images/spinner.gif"/> -->
 	</ul>
-	<% end #end "comment out" %> 
 </div>

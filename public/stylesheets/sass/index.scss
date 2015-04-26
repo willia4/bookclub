@@ -18,7 +18,7 @@ body {
 	visibility: invisible;
 }
 
-#page-spinner {
+#page-spinner, .page-spinner {
 	max-height: 24px;
 	margin-bottom: 5px;
 	margin-right: 5px;
@@ -84,6 +84,11 @@ ul.book-list, ul.meeting-list {
 
 ul.book-list {
 	margin-bottom: 60px;
+
+	button.action-button {
+		width: 100%;
+		margin-top: 5px;
+	}
 }
 
 .book-listing {

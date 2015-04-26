@@ -6,7 +6,7 @@
 <% content_for :extra_javascript do %>
 
 <script type="text/javascript">
-	window.bbBookClub = {};
+	window.bbBookClub = window.bbBookClub || {};
 	window.bbBookClub.initialState = '<%= @initial_state_json %>';
 	window.bbBookClub.initialState = JSON.parse(window.bbBookClub.initialState);
 </script>

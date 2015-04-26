@@ -81,22 +81,25 @@
 			html += '<div class="col-sm-' + size + '" >';
 
 			$.each(settings.buttons, function (i, button) {
-				var buttonClass = "btn btn-" + button.type,
-					callbackIndex = getNextInteger();
+				//show the button if the shouldShow function is not defined or if it is defined and returns true
+				if (!button.shouldShow || button.shouldShow(book)) {
+					var buttonClass = "action-button btn btn-" + button.type,
+						callbackIndex = getNextInteger();
 
-				if (button.customClass) {
-					buttonClass += " " + button.customClass;
-				}
+					if (button.customClass) {
+						buttonClass += " " + button.customClass;
+					}
 
-				buttonCallbacks[callbackIndex] = button.callback;
+					buttonCallbacks[callbackIndex] = button.callback;
 
-				html += '<div class="row">';
-					html += '<div class="col-sm-12">';
-						html += '<button class="' + buttonClass + '" data-book-id="' + book.book_id + '" data-title="' + book.title + '" data-button-index="' + callbackIndex + '">';
-						html += button.title;
-						html += '</button>';
+					html += '<div class="row">';
+						html += '<div class="col-sm-12">';
+							html += '<button class="' + buttonClass + '" data-book-id="' + book.book_id + '" data-title="' + book.title + '" data-button-index="' + callbackIndex + '">';
+							html += button.title;
+							html += '</button>';
+						html += '</div>';
 					html += '</div>';
-				html += '</div>';
+				}
 			});
 
 			html += '</div>';
@@ -184,7 +187,7 @@
 			data = data[settings.collectionName];
 
 			//sort if necessary
-			if (settings.sort) {
+			if (data && settings.sort) {
 				if (settings.sort === "asc" || settings.sort === "desc") {
 					//Store this outside of the function so the sort function will close over it 
 					//and we don't have to do the string compare each time the function is called
@@ -230,7 +233,7 @@
 
 		function replaceBooks(newBookData, callback) {
 			var shadow = $('<ul class="book-list"></ul>'),
-				real = $("ul.book-list");
+				real = parent;
 
 			renderBooksInElement(newBookData, shadow);
 

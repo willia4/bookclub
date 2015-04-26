@@ -128,23 +128,66 @@ end
 get '/books/unread.json' do 
   content_type :json, 'charset' => 'utf-8'
 
-  books = map_books_to_json_hash(Database::Books.list_unread_books())
-
-  JSON.pretty_generate(books)
+  JSON.pretty_generate(map_books_to_json_hash(Database::Books.list_unread_books()))
 end
 
 get '/books/read.json' do
   content_type :json, 'charset' => 'utf-8'
 
-  books = map_books_to_json_hash(Database::Books.list_read_books())
-
-  JSON.pretty_generate(books)
+  JSON.pretty_generate(map_books_to_json_hash(Database::Books.list_read_books()))
 end
 
 get '/books/rejected.json' do
   content_type :json, 'charset' => 'utf-8'
 
-  books = map_books_to_json_hash(Database::Books.list_rejected_books())
+  JSON.pretty_generate(map_books_to_json_hash(Database::Books.list_rejected_books()))
+end
 
-  JSON.pretty_generate(books)
+post '/books/book/:book_id/reject' do |book_id|
+  errorAction = "reject book from future consideration"
+
+  book = Database::Books.find_book_by_book_id(book_id)
+  raise NotFoundError.new(errorAction, "The book could not be found") if book.nil?
+
+  user = @session_state[:user_profile]
+  authorized = (user.user_status == "admin" || user.user_id == book.addedby_id)
+
+  raise AuthorizationError.new(errorAction, "Only administrators or the original submitter may reject books from future consideration") if not authorized
+
+  raise AppError.new(errorAction, "This book has already been selected for a meeting", 400) if book.read == "true"
+  raise AppError.new(errorAction, "This book has already been rejected", 400) if book.rejected == "true"
+
+  meetings = Database::Meetings.find_meetings_for_book(book_id)
+  raise AppError.new(errorAction, "This book is nominated for #{meetings.size} meeting(s) and cannot be rejected.", 400) if meetings.size > 0
+
+  book.rejected = true
+  Database::Books.save_book(book)
+
+  status 200
+  content_type :json, 'charset' => 'utf-8'
+
+  JSON.pretty_generate(map_books_to_json_hash(Database::Books.list_unread_books()))
+end
+
+post '/books/book/:book_id/unreject' do |book_id|
+  errorAction = "un-reject book back to future consideration"
+
+  book = Database::Books.find_book_by_book_id(book_id)
+  raise NotFoundError.new(errorAction, "The book could not be found") if book.nil?
+
+  user = @session_state[:user_profile]
+  authorized = (user.user_status == "admin" || user.user_id == book.addedby_id)
+
+  raise AuthorizationError.new(errorAction, "Only administrators or the original submitter may un-reject books") if not authorized
+
+  raise AppError.new(errorAction, "This book has already been selected for a meeting", 400) if book.read == "true"
+  raise AppError.new(errorAction, "This book has not been rejected", 400) if book.rejected == "false"
+
+  book.rejected = false
+  Database::Books.save_book(book)
+  
+  status 200
+  content_type :json, 'charset' => 'utf-8'
+
+  JSON.pretty_generate(map_books_to_json_hash(Database::Books.list_rejected_books()))
 end
