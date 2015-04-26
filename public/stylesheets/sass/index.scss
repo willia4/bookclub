@@ -18,6 +18,11 @@ body {
 	visibility: invisible;
 }
 
+img.site-logo {
+	max-width: 25px;
+	display: inline;
+}
+
 #page-spinner, .page-spinner {
 	max-height: 24px;
 	margin-bottom: 5px;

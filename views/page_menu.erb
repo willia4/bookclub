@@ -6,7 +6,9 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		<a href="<%= $config[:general][:base_url] %>" class="navbar-brand"><%= $config[:general][:site_name] %></a>
+		<a href="<%= $config[:general][:base_url] %>" class="navbar-brand">
+			<img class="site-logo" src="/images/favicomatic/favicon-196x196.png"/>
+			<%= $config[:general][:site_name] %></a>
 	</div>
 
 	<div id="navbarCollapse" class="collapse navbar-collapse">
@@ -31,6 +33,10 @@
 
 	<ul class="nav navbar-nav">
 		<li><a href="https://github.com/willia4/bookclub/issues">Report a Bug</a></li>
+	</ul>
+
+	<ul class="nav navbar-nav">
+		<li><a href="/colophon">Colophon</a></li>
 	</ul>
 
 	<% if @session_state[:logged_in] %>
