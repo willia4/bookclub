@@ -171,7 +171,8 @@
 		}
 
 		function renderBooksInElement(books, element) {
-			var data = {};
+			var data = {}, sortFunction, sortAscending = false;
+
 			if (books.hasOwnProperty(settings.collectionName)) {
 				data = books;
 			}
@@ -179,7 +180,34 @@
 				data[settings.collectionName] = books;
 			}
 
-			var book_elements = $.map(data[settings.collectionName], function (value, i) {
+			//extract the data collection 
+			data = data[settings.collectionName];
+
+			//sort if necessary
+			if (settings.sort) {
+				if (settings.sort === "asc" || settings.sort === "desc") {
+					//Store this outside of the function so the sort function will close over it 
+					//and we don't have to do the string compare each time the function is called
+					sortAscending = (settings.sort === "asc"); 
+
+					sortFunction = function (a, b) {
+						var aTime = (a.hasOwnProperty("date_added") ? Date.parse(a["date_added"]) : 0),
+							bTime = (b.hasOwnProperty("date_added") ? Date.parse(b["date_added"]) : 0);
+
+						return (sortAscending ? (aTime - bTime) : (bTime - aTime));
+					}
+				}
+				else if (typeof settings.sort === "function") {
+					sortFunction = settings.sort;
+				}
+				else {
+					throw "Sort must be \"asc\", \"desc\", or a sort function";
+				}
+
+				data = data.sort(sortFunction);
+			}
+
+			var book_elements = $.map(data, function (value, i) {
 				return renderBook(value);
 			});
 
@@ -353,6 +381,7 @@
 		collectionName: "books",
 		votingCallbacks: null,
 		meetingId: null,
-		buttons: null
+		buttons: null,
+		sort: null
 	};
 })(jQuery);
