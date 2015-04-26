@@ -4,58 +4,6 @@
 <% end %>
 
 <% content_for :extra_javascript do %>
-<script id="book-nominations-template" type="text/x-handlebars-template">
-{{#each nominated_books}}
-<li class="row book-listing" data-id="{{book_id}}" data-title="{{title}}" data-votes="{{votes}}" data-user-vote="{{user_vote}}">
-	<div class="col-sm-1" style="font-size: 125%;">
-		<div class="row">
-			<div class="col-xs-12" style="text-align:center; font-weight: bold;">
-				<a href="#" class="vote-button vote-up-button {{#if upvoted}}vote-selected{{/if}}" data-id="{{book_id}}"><span class="glyphicon glyphicon-arrow-up"></span></a>
-			</div>
-		</div>
-		<div class="row"><div class="col-xs-12" style="text-align:center">{{votes}}</div></div>
-		<div class="row">
-			<div class="col-xs-12" style="text-align:center">
-				<a href="#" class="vote-button vote-down-button {{#if downvoted}}vote-selected{{/if}}" data-id="{{book_id}}"><span class="glyphicon glyphicon-arrow-down"></span></a>
-			</div>
-		</div>
-	</div>
-
-	<div class="col-sm-11">
-		<div class="row">
-			<div class="col-sm-2">
-				{{#if image_url}}
-				<a href="{{book_url}}"><img class="book-image" src="{{image_url}}" /></a>
-				{{/if}}
-			</div>
-			<div class="col-sm-offset-1 col-sm-6">
-				<div class="row">
-					<div class="col-xs-12 book-title"><a href="{{book_url}}">{{title}}</a></div>
-				</div>
-				<div class="row">
-					<div class="col-xs-12 book-author">{{author}}</div>
-				</div>
-			</div>
-			<div class="col-sm-3">
-				<% if @session_state[:show_admin] %>
-				<div class="row">
-					<div class="col-sm-12"><button class="btn btn-danger book-reject-button" data-book-id="{{book_id}}" data-title="{{title}}">Reject</button></div>
-				</div>
-				<div class="row">
-					<div class="col-sm-12"><button class="btn btn-success book-select-button" data-book-id="{{book_id}}" data-title="{{title}}">Select</button></div>
-				</div>
-				<% end %>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-sm-offset-7 col-sm-5 book-date-added" title="{{date_added_formatted}}">
-				Added {{age_statement}}
-			</div>
-		</div>
-	</div>
-</li>
-{{/each}}
-</script>
 
 <script type="text/javascript">
 	window.bbBookClub = {};
@@ -69,10 +17,153 @@
 <script src="/javascripts/bootbox.js"></script>
 <script src="/javascripts/date.js"></script>
 <script src="/javascripts/bootstrap-datepicker.js"></script>
-<script src="/javascripts/handlebars-v2.0.0.js"></script>
-<script src="/javascripts/meeting.js"></script>
+
+<script src="/javascripts/book_list_component.js"></script>
 <script src="/javascripts/meeting_edit.js"></script>
 <script src="/javascripts/meeting_add_book.js"></script>
+
+<script type="text/javascript">
+	$(document).ready(function () { 
+		var meetingId = "<%= @meeting.meeting_id %>";
+
+		function rejectionHandler(bookId, title, completionCallback) {
+			var t = this;
+
+			bootbox.dialog({
+				title: "Reject Book",
+				message: "Are you sure you want to reject \"" + title + "\" from being considered for this meeting?",
+				buttons: {
+					no: {
+						label: "No",
+						className: "btn btn-primary",
+						callback: function () {
+							//the box will close on its own
+							completionCallback();
+						}
+					},
+					reject: {
+						label: "Reject",
+						className: "btn btn-danger",
+						callback: function () {
+							var url = "/meetings/meeting/" + meetingId + "/books/" + bookId;;
+
+							$.ajax({
+								type: 'DELETE',
+								dataType: 'json',
+								url: url,
+								error: function (jqXHR, textStatus, errorThrown) {
+									//TODO handle error
+									completionCallback();
+								},
+								success: function (data) {
+									t.reloadBooks(data, function () {
+										completionCallback();
+									});
+								}
+							});
+						}
+					}
+				}
+			});
+		}
+
+		function selectHandler(bookId, title, completionCallback) {
+			bootbox.dialog({
+				title: "Select Book",
+				message: "Are you sure you want to choose \"" + title + "\" for this meeting?",
+				buttons: {
+					no: {
+						label: "No",
+						className: "btn btn-primary",
+						callback: function () {
+							//the box will close on its own
+							completionCallback();
+						}
+					},
+					select: {
+						label: "Select",
+						className: "btn btn-success",
+						callback: function () {
+							var url = "/meetings/meeting/" + meetingId + "/books/" + bookId + "/select";;
+
+							$.ajax({
+								type: 'GET',
+								url: url,
+								error: function (jqXHR, textStatus, errorThrown) {
+									completionCallback();
+								},
+								success: function (data) {
+									document.location.reload(true);
+								}
+							});
+						}
+					}
+				}
+			});
+		}
+
+		function startVote(bookId, direction, callback) {
+			var url = '/meetings/meeting/' + meetingId + '/books/' + bookId + '/vote/' + direction;; 
+
+			$.ajax({
+				type: 'POST',
+				url: url,
+				error: function (jqXHR, textStatus, errorThrown) {
+					//TODO report error
+					callback();
+				},
+				success: function (data) {
+					callback(data);
+				}
+			});
+		}
+
+		function makeVoteCallback(direction) {
+			return function (bookId, completionCallback) {
+				var t = this;
+				startVote(bookId, direction, function (newBooks) {
+					if (newBooks) {
+						t.reloadBooks(newBooks, function () {
+							completionCallback();		
+						});
+					}
+					else {
+						completionCallback();
+					}
+				});
+			};
+		}
+
+		$(".book-list").bookList(
+			{
+				initialState: bbBookClub.initialState,
+				collectionName: "nominated_books",
+
+				showSpinnerCallback: function () { $("#page-spinner").removeClass("invisible"); },
+				hideSpinnerCallback: function () { $("#page-spinner").addClass("invisible"); },
+
+				votingCallbacks: {
+					voteUp: makeVoteCallback("up"),
+					voteDown: makeVoteCallback("down")
+				},
+
+				buttons: [
+					{
+						title: "Reject",
+						type: "danger",
+						customClass: "book-reject-button",
+						callback: rejectionHandler
+					},
+					{
+						title: "Select",
+						type: "success",
+						customClass: "book-select-button",
+						callback: selectHandler
+					}
+				]
+		});
+	});
+</script>
 <% end %>
 
 <div id="meeting-container" class="container" 

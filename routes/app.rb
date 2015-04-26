@@ -60,8 +60,6 @@ require './routes/books.rb'
 require './routes/meetings.rb'
 
 get '/' do
-  @unread_books = Database::Books.list_unread_books.sort { |a, b| -(Time.parse(a.date_added) <=> Time.parse(b.date_added)) }
-
   @future_meetings = (Database::Meetings.list_future_meetings.sort_by { |m| m.date }).map do |m|
     selected_book = (m.selected_book_id.nil? || m.selected_book_id == "") ? nil : Database::Books.find_book_by_book_id(m.selected_book_id)
 
