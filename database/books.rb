@@ -63,7 +63,11 @@ module Database
     end
 
     def self.list_unread_books
-      return list_books_from_sdb_query("select * from #{SDB.build_domain("books")} where read = 'false'")
+      return list_books_from_sdb_query("select * from #{SDB.build_domain("books")} where read = 'false' and (rejected is null or rejected = 'false') ")
+    end
+
+    def self.list_rejected_books
+      return list_books_from_sdb_query("select * from #{SDB.build_domain("books")} where rejected = 'true'")
     end
 
     def self.list_read_books

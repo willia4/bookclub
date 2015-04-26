@@ -6,12 +6,6 @@ require './models/book.rb'
 require './exceptions/AppError.rb'
 
 get '/books' do
-  books = Database::Books.list_books
-
-  @unread = books.select { |b| b.read === "false" && b.rejected === "false" }
-  @read = books.select { |b| b.read === "true" }
-  @rejected = books.select { |b| b.rejected === "true" }
-
   erb :books
 end
 
@@ -110,11 +104,8 @@ get '/books/goodreads/info/:id' do |id|
   JSON.pretty_generate(data)
 end
 
-get '/books/unread.json' do 
-  content_type :json, 'charset' => 'utf-8'
-  books = Database::Books.list_unread_books()
-
-  books = books.map do |book| 
+def map_books_to_json_hash(books)
+  books.map do |book|
     date_added = Time.parse(book.date_added).getlocal
     today = Time.now.getlocal
 
@@ -132,6 +123,28 @@ get '/books/unread.json' do
       "age_statement" => age,
     }
   end
+end
+
+get '/books/unread.json' do 
+  content_type :json, 'charset' => 'utf-8'
+
+  books = map_books_to_json_hash(Database::Books.list_unread_books())
+
+  JSON.pretty_generate(books)
+end
+
+get '/books/read.json' do
+  content_type :json, 'charset' => 'utf-8'
+
+  books = map_books_to_json_hash(Database::Books.list_read_books())
+
+  JSON.pretty_generate(books)
+end
+
+get '/books/rejected.json' do
+  content_type :json, 'charset' => 'utf-8'
+
+  books = map_books_to_json_hash(Database::Books.list_rejected_books())
 
   JSON.pretty_generate(books)
 end

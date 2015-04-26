@@ -2,6 +2,29 @@
 <link rel="stylesheet" type="text/css" href="/stylesheets/books.css" />
 <% end %>
 
+<% content_for :extra_javascript do %>
+
+<script src="/javascripts/book_list_component.js"></script>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		$("#book-list-read").book_list({
+			getUrl: "/books/read.json"
+		});
+
+		$("#book-list-unread").book_list({
+			getUrl: "/books/unread.json"
+		});
+
+		<% if false %>
+		$("#book-list-rejected").book_list({
+			getUrl: "/books/rejected.json"
+		});
+		<% end %>
+	});
+</script>
+<% end %>
+
 <div class="container">
 	<div class="row">
 		<div class="col-sm-12 page-title"><div>Books</div></div>
@@ -11,70 +34,16 @@
 		<div class="col-sm-12 content-title"><div>For Future Consideration</div></div>
 	</div>
 
-	<ul class="book-list">
-		<% @unread.each do |book| %>
-		<li class="row book-listing" data-id="<%= book.book_id %>">
-			<div class="col-sm-12">
-				<div class="row">
-					<div class="col-sm-2">
-						<% if book.image_url && !book.image_url.empty? %>
-						<a href="<%= book.book_url %>"><img class="book-image" src="<%= book.image_url %>" /></a>
-						<% end %>
-					</div>
-					<div class="col-sm-offset-1 col-sm-9">
-						<div class="row">
-							<div class="col-xs-12 book-title"><a href="<%= book.book_url %>"><%= book.title %></a></div>
-						</div>
-						<div class="row">
-							<div class="col-xs-12 book-author"><%= book.author %></div>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<% date_added = Time.parse(book.date_added).getlocal
-					  today = Time.now.getlocal %>
-					<div class="col-sm-offset-7 col-sm-5 book-date-added" title="<%= date_added.strftime("%Y-%b-%d @ %I:%M%P %Z") %>">
-						Added <%= (date_added.year == today.year && date_added.month == today.month && date_added.day == today.day) ? "today" : book.age + " ago" %>
-					</div>
-				</div>
-			</div>
-		</li>
-		<% end %>
+	<ul id="book-list-unread" class="book-list">
+		<img class="spinner" src="/images/spinner.gif"/>
 	</ul>
 
 	<div class="row">
 		<div class="col-sm-12 content-title"><div>Read</div></div>
 	</div>
 
-	<ul class="book-list">
-		<% @read.each do |book| %>
-		<li class="row book-listing" data-id="<%= book.book_id %>">
-			<div class="col-sm-12">
-				<div class="row">
-					<div class="col-sm-2">
-						<% if book.image_url && !book.image_url.empty? %>
-						<a href="<%= book.book_url %>"><img class="book-image" src="<%= book.image_url %>" /></a>
-						<% end %>
-					</div>
-					<div class="col-sm-offset-1 col-sm-9">
-						<div class="row">
-							<div class="col-xs-12 book-title"><a href="<%= book.book_url %>"><%= book.title %></a></div>
-						</div>
-						<div class="row">
-							<div class="col-xs-12 book-author"><%= book.author %></div>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<% date_added = Time.parse(book.date_added).getlocal
-					  today = Time.now.getlocal %>
-					<div class="col-sm-offset-7 col-sm-5 book-date-added" title="<%= date_added.strftime("%Y-%b-%d @ %I:%M%P %Z") %>">
-						Added <%= (date_added.year == today.year && date_added.month == today.month && date_added.day == today.day) ? "today" : book.age + " ago" %>
-					</div>
-				</div>
-			</div>
-		</li>
-		<% end %>
+	<ul id="book-list-read" class="book-list">
+		<img class="spinner" src="/images/spinner.gif"/>
 	</ul>
 
 	<% if false %>
@@ -82,35 +51,8 @@
 		<div class="col-sm-12 content-title"><div>Rejected</div></div>
 	</div>
 
-	<ul class="book-list">
-		<% @rejected.each do |book| %>
-		<li class="row book-listing" data-id="<%= book.book_id %>">
-			<div class="col-sm-12">
-				<div class="row">
-					<div class="col-sm-2">
-						<% if book.image_url && !book.image_url.empty? %>
-						<a href="<%= book.book_url %>"><img class="book-image" src="<%= book.image_url %>" /></a>
-						<% end %>
-					</div>
-					<div class="col-sm-offset-1 col-sm-9">
-						<div class="row">
-							<div class="col-xs-12 book-title"><a href="<%= book.book_url %>"><%= book.title %></a></div>
-						</div>
-						<div class="row">
-							<div class="col-xs-12 book-author"><%= book.author %></div>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<% date_added = Time.parse(book.date_added).getlocal
-					  today = Time.now.getlocal %>
-					<div class="col-sm-offset-7 col-sm-5 book-date-added" title="<%= date_added.strftime("%Y-%b-%d @ %I:%M%P %Z") %>">
-						Added <%= (date_added.year == today.year && date_added.month == today.month && date_added.day == today.day) ? "today" : book.age + " ago" %>
-					</div>
-				</div>
-			</div>
-		</li>
-		<% end %>
+	<ul id="book-list-rejected" class="book-list">
+		<img class="spinner" src="/images/spinner.gif"/>
 	</ul>
 	<% end #end "comment out" %> 
 </div>
