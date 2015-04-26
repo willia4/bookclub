@@ -8,16 +8,16 @@
 
 <script type="text/javascript">
 	$(document).ready(function () {
-		$("#book-list-read").book_list({
+		$("#book-list-read").bookList({
 			getUrl: "/books/read.json"
 		});
 
-		$("#book-list-unread").book_list({
+		$("#book-list-unread").bookList({
 			getUrl: "/books/unread.json"
 		});
 
 		<% if false %>
-		$("#book-list-rejected").book_list({
+		$("#book-list-rejected").bookList({
 			getUrl: "/books/rejected.json"
 		});
 		<% end %>

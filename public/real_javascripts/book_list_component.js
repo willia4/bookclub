@@ -2,8 +2,8 @@
 
 (function ($) {
 
-	$.fn.book_list = function (options) {
-		var settings = $.extend({}, $.fn.book_list.defaults, options), 
+	$.fn.bookList = function (options) {
+		var settings = $.extend({}, $.fn.bookList.defaults, options), 
 			parent = this,
 			buttonCallbacks = {},
 			counter = 0;
@@ -345,7 +345,7 @@
 		return parent;
 	};
 
-	$.fn.book_list.defaults = {
+	$.fn.bookList.defaults = {
 		getUrl: null,
 		initialState: null,
 		showSpinnerCallback: null,
