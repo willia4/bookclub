@@ -2,44 +2,78 @@
 <link rel="stylesheet" type="text/css" href="/stylesheets/book.css" />
 <% end %>
 
-<div class="container">
+<% content_for :extra_javascript do %>
+<script src="/javascripts/book_edit.js"></script>
+<% end %>
+
+<div id="book-container" class="container" 
+	data-book-id="<%=@book.book_id%>" 
+	data-book-title="<%=@book.title%>" 
+	data-book-author="<%=@book.author%>" 
+	data-book-external-url="<%=@book.external_url%>" 
+	data-book-image-url="<%=@book.image_url%>" 
+	>
 	<div class="row">
-		<div class="col-sm-12 page-title"><div><%= @book.title %></div></div>
+		<img id="page-spinner" class="invisible" src="/images/spinner.gif"/>
+		<div id="book-title" class="col-sm-12 page-title"><div><%= @book.title %></div></div>
 	</div>
 	<div class="row">
 		<div id="sidebar" class="col-md-2">
-			<% if @book.image_url && @book.image_url != "" %>
 			<div class="row book-cover-row">
 				<div class="col-xs-12 book-cover">
+					<% if @book.image_url && @book.image_url != "" %>
 					<img src="<%=@book.image_url%>"/>
+					<% end %>
 				</div>
 			</div>
-			<% end %>
 
-			<% if @book.external_url && @book.external_url != "" %>
-			<% 	external_url_title = "More Info" 
-				external_url_title = "More Info on Goodreads" if @book.external_url =~ /(http[s]?:\/\/)?(www\.)?goodreads\.com/
-			%>
 			<div class="row more-info-row">
 				<div class="col-xs-12 more-info">
+					<% if @book.external_url && @book.external_url != "" %>
+					<% 	external_url_title = "More Info" 
+						external_url_title = "More Info on Goodreads" if @book.external_url =~ /(http[s]?:\/\/)?(www\.)?goodreads\.com/
+					%>
 					<a href="<%= @book.external_url %>"><%= external_url_title %></a>
+					<% end %>
+				</div>
+			</div>
+
+			<% if @session_state[:show_admin] || @session_state[:user_profile].user_id == @book.addedby_id %>
+			<div class="row edit-row">
+				<div class="col-sm-12 edit-buttons">
+					<button id="edit-book-button" class="btn btn-default">Edit Book</button>
+					<button id="edit-book-save-button" class="btn btn-primary hidden">Save</button>
+					<button id="edit-book-cancel-button" class="btn btn-default hidden">Cancel</button>
 				</div>
 			</div>
 			<% end %>
 		</div>
 		<div id="main-content" class="col-md-10">
 			<div class="row">
-				<div class="col-xs-12 col-sm-9 content-title">
+				<div id="validation-errors" class="col-xs-12 col-sm-9"></div>
+			</div>
+
+			<div class="row">
+				<div id="book-author" class="col-xs-12 col-sm-9 content-title">
 					<div>by <%= @book.author %></div>
 				</div>
 				<div class="col-xs-0 col-sm-3"><!--spacer--></div>
 			</div>
 			<div class="row summary-row">
-				<% if @book.summary && @book.summary != "" %>
-				<div class="col-xs-12 summary">
-					<%= @book.summary %>
+				<div id="book-summary" class="col-xs-12 summary">
+					<div><%= @book.summary %></div>
 				</div>
-				<% end %>
+			</div>
+
+			<div class="row hidden" id="book-edit-additional-fields">
+				<div class="col-xs-12">
+					<div class="row">
+						<div class="col-xs-12"><input class="form-control" id="edit-book-external-url" placeholder="External Url" type="text"/></div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12"><input class="form-control" id="edit-book-image-url" placeholder="Image Url" type="text"/></div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>

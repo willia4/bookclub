@@ -81,6 +81,69 @@ get '/books/book/:book_id' do |book_id|
   erb :book
 end
 
+#Book Edit
+post '/books/book/:book_id' do |book_id|
+  error_action = "edit_book"
+
+  book = Database::Books.find_book_by_book_id(book_id)
+  raise NotFoundError.new(errorAction, "The book could not be found") if book.nil?
+
+  user = @session_state[:user_profile]
+  authorized = (user.user_status == "admin" || user.user_id == book.addedby_id)
+
+  raise AuthorizationError.new(errorAction, "Only administrators or the original submitter may edit books") if not authorized
+
+  title = Sanitize.fragment(params[:title], Sanitize::Config::RELAXED)
+  author = Sanitize.fragment(params[:author], Sanitize::Config::RELAXED)
+  external_url = Sanitize.fragment(params[:external_url], Sanitize::Config::RELAXED)
+  image_url = Sanitize.fragment(params[:image_url], Sanitize::Config::RELAXED)
+  summary = Sanitize.fragment(params[:summary], Sanitize::Config::RELAXED)
+
+  if title.nil? || title == ""
+    status 400
+    content_type :json, 'charset' => 'utf-8'
+    return JSON.pretty_generate({"field" => "title", "message" => "Title is required."})
+  end
+
+  if author.nil? || author == ""
+    status 400
+    content_type :json, 'charset' => 'utf-8'
+    return JSON.pretty_generate({"field" => "author", "message" => "Author is required."})
+  end
+
+  if !external_url.nil? && !external_url.empty?
+    uri = URI.parse(external_url)
+    if !uri.kind_of?(URI::HTTP)  && !uri.kind_of?(URI::HTTPS)
+      status 400
+      content_type :json, 'charset' => 'utf-8'
+      return JSON.pretty_generate({"field" => "external_url", "message" => "The additional URL must be a valid HTTP or HTTPS URL."})
+    end
+  end
+
+  if !image_url.nil? && !image_url.empty?
+    uri = URI.parse(image_url)
+    if !uri.kind_of?(URI::HTTP)  && !uri.kind_of?(URI::HTTPS)
+      status 400
+      content_type :json, 'charset' => 'utf-8'
+      return JSON.pretty_generate({"field" => "image_url", "message" => "The image URL must be a valid HTTP or HTTPS URL."})
+    end
+  end
+
+  if !image_url.nil? && !image_url.empty? && image_url != book.image_url
+    book.image_url = Database::S3.upload_url(image_url)
+  end
+
+  book.title = title
+  book.author = author
+  book.summary = summary
+  book.external_url = external_url
+
+  Database::Books.save_book(book)
+  
+  status 200
+  ""
+end
+
 get '/books/search' do
   query = params[:query]
   results = []
