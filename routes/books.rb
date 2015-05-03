@@ -4,6 +4,7 @@ require './apis/goodreads.rb'
 require './database/database.rb'
 require './models/book.rb'
 require './exceptions/AppError.rb'
+require './exceptions/DetailedError.rb'
 
 get '/books' do
   erb :books
@@ -142,6 +143,33 @@ post '/books/book/:book_id' do |book_id|
   
   status 200
   ""
+end
+
+#book delete
+delete '/books/book/:book_id' do |book_id|
+  action_name = "delete a book"
+  
+  book = Database::Books.find_book_by_book_id(book_id)
+  raise NotFoundError.new(action_name, "The book could not be found") if book.nil?
+
+  raise AuthorizationError.new(action_name, "Only administrators may delete books") if not @session_state[:show_admin]
+
+  meetings = Database::Meetings.find_meetings_for_book(book_id)
+  if meetings.size > 0
+    detailed_message = "<p>This book is selected or nominated for the following meetings: </p>"
+    detailed_message += "<p><ul>"
+
+    meetings.each do |meeting|
+      detailed_message += "<li><a href=\"/meetings/meeting/#{meeting.meeting_id}\">#{meeting.date}</a></li>"
+    end
+
+    detailed_message += "</ul></p>"
+
+    raise DetailedError.new(action_name, "Unable to delete", "This book is being used", detailed_message, {}, 400)
+  end
+
+  Database::Books.delete_book(book)
+  status 200
 end
 
 get '/books/search' do

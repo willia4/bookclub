@@ -106,6 +106,23 @@ error do
   response.headers['X-Bookclub-Error-Reason'] = error_state[:reason]
   response.headers['X-Bookclub-Error-Title'] = error_state[:title]
 
-  erb :error, :locals => {:error_state => error_state}
+  message_dictionary = nil
+  if e.respond_to?("message_dictionary")
+    message_dictionary = e.message_dictionary
+  end
+
+  if e.respond_to?("detailed_message")
+    message_dictionary = {} if message_dictionary.nil?
+    message_dictionary["detailedMessage"] = e.detailed_message
+  end
+
+  if !message_dictionary.nil?
+    response.headers['X-Bookclub-Error-SeeJSON'] = "YES"
+    content_type :json, 'charset' => 'utf-8'
+
+    return JSON.pretty_generate(message_dictionary)
+  else
+    return erb :error, :locals => {:error_state => error_state}
+  end
 end
 

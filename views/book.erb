@@ -4,6 +4,7 @@
 
 <% content_for :extra_javascript do %>
 <script src="/javascripts/book_edit.js"></script>
+<script src="/javascripts/book_delete.js"></script>
 <% end %>
 
 <div id="book-container" class="container" 
@@ -44,6 +45,11 @@
 					<button id="edit-book-button" class="btn btn-default">Edit Book</button>
 					<button id="edit-book-save-button" class="btn btn-primary hidden">Save</button>
 					<button id="edit-book-cancel-button" class="btn btn-default hidden">Cancel</button>
+				</div>
+			</div>
+			<div class="row delete-row">
+				<div class="col-sm-12 delete-buttons">
+					<button id="delete-book-button" class="btn btn-danger">Delete Book</button>
 				</div>
 			</div>
 			<% end %>

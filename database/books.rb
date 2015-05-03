@@ -48,10 +48,8 @@ module Database
     end
 
     def self.delete_book book
-      book = book.book_id if book.respond_to?("book_id")
-
-      Redis.delete_book_id(book)
-      SDB.delete_items('books', book)
+      Redis.delete_book_id(book.book_id)
+      SDB.delete_items('books', book.book_id)
 
       if !book.summary_key.nil? && book.summary_key != ""
         S3.delete_string_value(book.summary_key)

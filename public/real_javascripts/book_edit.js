@@ -2,6 +2,7 @@ $(document).ready(function () {
 	var editButton = $("#edit-book-button"),
 		saveButton = $("#edit-book-save-button"),
 		cancelButton = $("#edit-book-cancel-button"),
+		deleteButton = $("#delete-book-button"),
 		bookEl = $("#book-container"),
 
 		bookTitleEl = $("#book-title > div"),
@@ -33,6 +34,8 @@ $(document).ready(function () {
 		$("#book-edit-additional-fields").removeClass("hidden");
 		externalUrlFormEl.val(originalValues.externalUrl);
 		imageUrlFormEl.val(originalValues.imageUrl);
+
+		deleteButton.prop("disabled", true);
 	}
 
 	function removeFormElements() {
@@ -48,6 +51,8 @@ $(document).ready(function () {
 
 		$("#book-edit-additional-fields").addClass("hidden");
 		$(".book-cover").html('<img src="' + originalValues.imageUrl + '"/>');
+
+		deleteButton.prop("disabled", false);
 	}
 
 	function enableFormElements() {
