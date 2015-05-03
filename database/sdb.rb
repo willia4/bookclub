@@ -20,6 +20,21 @@ module Database
       return get_database_client.select(select_expression: query, consistent_read: true)
     end
 
+    def self.select_object_names_for_query(query)
+      data = select(query)
+      names = []
+
+      data.each do |page|
+        if page.items 
+          page.items.each do |item|
+            names << item.name
+          end
+        end
+      end
+
+      return names
+    end
+
     def self.find_attribute(attributes, key)
       #support someone passing in the item instead of the item's attributes
       if attributes.respond_to? "attributes"

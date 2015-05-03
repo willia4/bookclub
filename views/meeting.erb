@@ -20,6 +20,7 @@
 
 <script src="/javascripts/book_list_component.js"></script>
 <script src="/javascripts/meeting_edit.js"></script>
+<script src="/javascripts/meeting_delete.js"></script>
 <script src="/javascripts/meeting_add_book.js"></script>
 
 <script type="text/javascript">
@@ -193,10 +194,17 @@
 					<button id="edit-meeting-cancel-button" class="btn btn-default hidden">Cancel</button>
 				</div>
 			</div>
+			<div class="row">
+				<div class="col-sm-12 delete-button">
+					<button id="delete-meeting-button" class="btn btn-danger">Delete Meeting</button>
+				</div>
+			</div>
 			<% end %>
 			<div class="row">
 				<div class="col-xs-12 meeting-date">
-					<div id="meeting-date-group" class="form-group"><div id="meeting-date"><%= @meeting.date.strftime("%A - %b %d, %Y") %></div></div>
+					<div id="meeting-date-group" class="form-group"><div id="meeting-date">
+						<%= @meeting.date.strftime("%A - %b %d, %Y") %>
+					</div></div>
 					 <div id="meeting-time-symbol"><%= (@meeting.time && @meeting.time != "") ? "@ " : "" %></div>
 					 <div id="meeting-time-group" class="form-group"><div id="meeting-time"><%= @meeting.time %></div></div>
 				</div>		

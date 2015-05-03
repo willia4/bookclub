@@ -32,21 +32,9 @@ window.bbBookClub.setupBookListForRejectionFromNomination = function (args) {
 							dataType: "json",
 							url: url,
 							error: function (jqXHR, textStatus, errorThrown) {
-									var messageTitle = jqXHR.getResponseHeader("X-Bookclub-Error-Title") || "Unknown Error",
-										messageBody = jqXHR.getResponseHeader("X-Bookclub-Error-Reason") || "An unknown error has occurred";
-
-									bootbox.dialog({
-										title: messageTitle,
-										message: messageBody,
-										buttons: {
-											ok: {
-												label: "Ok",
-												className: "btn btn-primary",
-												callback: function () {
-													completionCallback();
-												}
-											}
-										}
+								bbBookClub.Utils.showXhrError(jqXHR)
+									.then(function () {
+										completionCallback();
 									});
 							},
 							success: function (data) {

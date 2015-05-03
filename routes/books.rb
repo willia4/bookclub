@@ -222,7 +222,7 @@ post '/books/book/:book_id/reject' do |book_id|
 
   meetings = Database::Meetings.find_meetings_for_book(book_id)
   raise AppError.new(errorAction, "This book is nominated for #{meetings.size} meeting(s) and cannot be rejected.", 400) if meetings.size > 0
-
+  
   book.rejected = true
   Database::Books.save_book(book)
 

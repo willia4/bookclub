@@ -9,6 +9,12 @@ module Database
     end
 
     def self.delete_meeting(meeting_id)
+      query = "select * from #{SDB.build_domain("votes")} where meeting_id = '#{meeting_id}'"
+      items = SDB.select_object_names_for_query(query)
+
+      SDB.delete_items('votes', items)
+      Redis.delete_votes_for_meeting(meeting_id)
+      
       Database::SDB.delete_items('meetings', [meeting_id])
     end
 

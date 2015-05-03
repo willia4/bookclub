@@ -199,8 +199,24 @@ post '/meetings/meeting/:id/edit' do |id|
   "{}"
 end
 
+delete '/meetings/meeting/:meeting_id' do |meeting_id|
+  action_name = "delete meeting"
+
+  raise AuthorizationError.new(action_name, "Only administrators may delete a meeting") if @session_state[:user_profile].user_status != 'admin'
+  meeting = Database::Meetings.find_meeting_by_meeting_id(meeting_id)
+  raise NotFoundError.new(action_name, "The meeting could not be found") if meeting.nil?
+
+  if !meeting.selected_book_id.nil? && meeting.selected_book_id != "" 
+    selected_book = Database::Books.find_book_by_book_id(meeting.selected_book_id)
+    selected_book.read = false;
+    Database::Books.save_book(selected_book)
+  end
+
+  Database::Meetings.delete_meeting(meeting_id)
+end
+
 get '/meetings/meeting/:meeting_id/other_unread' do |meeting_id|
-  meeting = Database::Meetings.find_meeting_by_meeting_id meeting_id
+  meeting = Database::Meetings.find_meeting_by_meeting_id(meeting_id)
   raise NotFoundError.new("edit the requested meeting", "The meeting could not be found") if meeting.nil?
 
   my_books = get_nominated_books_for_meeting(meeting)

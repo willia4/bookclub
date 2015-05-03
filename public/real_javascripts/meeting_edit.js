@@ -3,6 +3,8 @@ $(document).ready(function () {
 		editButton = $("#edit-meeting-button"),
 		saveButton = $("#edit-meeting-save-button"),
 		cancelButton = $("#edit-meeting-cancel-button"),
+		deleteButton = $("#delete-meeting-button"),
+
 		meetingEl = $("#meeting-container"),
 
 		meetingDateEl = $("#meeting-date"),
@@ -59,6 +61,8 @@ $(document).ready(function () {
 		meetingLocationFormEl = $('<input class="form-control" id="edit-meeting-location" placeholder="Location" type="text"/>');
 		meetingLocationFormEl.val(originalValues.location);
 		meetingLocationEl.replaceWith(meetingLocationFormEl);
+
+		deleteButton.prop('disabled', true);
 	}
 
 	function removeFormElements() {
@@ -77,6 +81,8 @@ $(document).ready(function () {
 		meetingDateFormEl = null;
 		meetingTimeFormEl = null;
 		meetingLocationFormEl = null;
+
+		deleteButton.prop('disabled', false);
 	}
 
 	function enableFormElements() {
