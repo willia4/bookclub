@@ -38,7 +38,8 @@ end
 
 #sigh
 get '/javascripts/:name' do |name|
-  real_path = File.join("/www/bookclub/public/real_javascripts/", "#{name}")
+  real_path = File.join(File.dirname(__FILE__), "../public/real_javascripts", "#{name}")
+
   halt(404) if not File.exist?(real_path)
 
   content_type "text/javascript"
