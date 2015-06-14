@@ -143,3 +143,6 @@ DEPENDENCIES
   sinatra
   sinatra-content-for2
   sprockets
+
+BUNDLED WITH
+   1.10.3
