@@ -24,7 +24,7 @@ server {
 	# Make site accessible from http://localhost/
 	server_name localhost;
 
-	root /www/bookclub/public;
+	root /www/public;
 	passenger_enabled on;
 
 	passenger_friendly_error_pages on;

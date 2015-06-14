@@ -1,0 +1,30 @@
+---
+# will stash a 0 into redis_package.rc if redis is installed
+- name: Detect redis
+  command: dpkg-query -l redis-server
+  register: redis_package
+  failed_when: false
+  changed_when: false
+
+- name: Install redis
+  become: yes
+  become_method: sudo
+  apt: name=redis-server state=present
+
+# Comment save to keep redis from writing to disk
+# Set max memory to 50MB and uncomment the directive to avoid swamping the server
+# Set an LRU memory eviction policy and uncomment the directive
+- name: Configure redis
+  become: yes
+  become_method: sudo
+  when: redis_package.rc != 0
+  shell: >
+    sed -i '/^save /s/^/#/g' /etc/redis/redis.conf &&
+    sed -i '/# maxmemory <bytes>/ c\maxmemory 50MB' /etc/redis/redis.conf  &&
+    sed -i '/# maxmemory-policy/ c\maxmemory-policy allkeys-lru' /etc/redis/redis.conf
+
+- name: Restart redis
+  become: yes
+  become_method: sudo
+  when: redis_package.rc != 0
+  command: service redis-server restart

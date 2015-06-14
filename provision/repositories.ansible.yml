@@ -1,0 +1,37 @@
+---
+- name: Add Git PPA Repository
+  become: yes
+  become_method: sudo
+  apt_repository: repo='ppa:git-core/ppa'
+
+- name: Add Phusion key to apt
+  become: yes
+  become_method: sudo
+  apt_key: keyserver=keyserver.ubuntu.com id=561F9B9CAC40B2F7
+
+- name: Install apt-transport-https
+  become: yes
+  become_method: sudo
+  apt: name=apt-transport-https state=present
+
+- name: Install ca-certificates
+  become: yes
+  become_method: sudo
+  apt: name=ca-certificates state=present
+
+- name: Detect Phusion repository
+  become: yes
+  become_method: sudo
+  stat: path='/etc/apt/sources.list.d/passenger.list'
+  register: phusion_source_list
+
+- name: Add Phusion repository to apt
+  become: yes
+  become_method: sudo
+  shell: echo 'deb https://oss-binaries.phusionpassenger.com/apt/passenger {{ubuntu_version}} main' > passenger.list chdir='/etc/apt/sources.list.d/'
+  when: not phusion_source_list.stat.exists
+
+- name: Update apt cache
+  become: yes
+  become_method: sudo
+  apt: update_cache=yes

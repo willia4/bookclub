@@ -1,4 +1,5 @@
 secrets.yaml
 
 .sass-cache
+.vagrant
 *.db

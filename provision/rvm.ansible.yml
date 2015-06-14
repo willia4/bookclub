@@ -1,0 +1,52 @@
+---
+- name: Detect installer
+  stat: path='/tmp/rvm-installer.sh'
+  register: rvm_installer
+
+- name: Detect rvm
+  stat: path='/usr/local/rvm/bin/rvm'
+  register: rvm_binary
+
+- name: Add RVM GPG Key
+  command: gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+  changed_when: False
+  become: yes
+  become_method: sudo
+  when: not rvm_binary.stat.exists
+
+- name: Get rvm installer
+  get_url:
+    url: 'https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm-installer'
+    dest: '/tmp/rvm-installer.sh'
+  when: not rvm_installer.stat.exists and not rvm_binary.stat.exists
+
+- name: Configure rvm installer
+  file: 
+    path: '/tmp/rvm-installer.sh'
+    mode: 0755
+  when: not rvm_binary.stat.exists
+
+- name: Install rvm
+  command: '/tmp/rvm-installer.sh stable --path /usr/local/rvm --auto-dotfiles'
+  become: yes
+  become_method: sudo
+  when: not rvm_binary.stat.exists
+
+# - name: Update rvm
+#   shell: '/usr/local/rvm/bin/rvm get stable && /usr/local/rvm/bin/rvm reload'
+#   become: yes
+#   become_method: sudo
+#   changed_when: False
+#   when: rvm_binary.stat.exists
+
+- name: Configure rvm
+  command: '/usr/local/rvm/bin/rvm autolibs 3'
+  become: yes
+  become_method: sudo
+  when: not rvm_binary.stat.exists
+
+- name: Add vagrant user to rvm group
+  command: usermod -a -G rvm vagrant
+  become: yes
+  become_method: sudo
+  when: not rvm_binary.stat.exists

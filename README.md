@@ -20,7 +20,7 @@ which are still in flux.
 [sass]: http://sass-lang.com/
 
 ## Vagrant
-To make all of this a little easier to manage, I've created a [Vagrant][vagrant] file and a set of provisioning scripts to set up a development environment including [rvm][rvm], 
+To make all of this a little easier to manage, I've created a [Vagrant][vagrant] file and a set of ansible provisioning playbooks to set up a development environment including [rvm][rvm], 
 [Redis][redis], and [Phusion Passenger][passenger] running under [nginx][nginx]. I should probably swtich to [Unicorn][unicorn] at some point, but the current system is working
 and switching it out doesn't sound like fun. 
 
@@ -44,55 +44,35 @@ fine under [VirtualBox][virtualbox]
 [virtualbox]: https://www.virtualbox.org/
 
 ### Step 2 - Set up project directory
-For convenience and distribution, the Vagrant files are currently checked in to this source tree under /misc/vagrant. However, to be useful to Vagrant, these need to live outisde 
-the source tree itself (since the source tree will live inside the Vagrant box). 
+For convenience and distribution, the Vagrant files currently live at the top level of this repo.
 
-1. Create a directory for the project. For example: `mkdir ~/projects/vagrant_bookclub`
-2. Download the contents of the [/misc/vagrant](https://github.com/willia4/bookclub/tree/master/misc/vagrant/provision) directory into your project directory
-3. Confirm that the contents of your project directory are a `Vagrantfile` and a `provision` directory with several scripts and configuration files
+Confirm that your project directory contains a `Vagrantfile`, a `provision` directory (with several .yml and other files in it)
+and a `src` directory containing the application source.
 
 ### Step 3 - Examine the Vagrant files
 
 1. Read over the `Vagrantfile` to get a sense of what it will do. The list of provisioning steps are at the bottom of the file. 
-2. Read each of those provisioning scripts in order to get a sense of what will happen.
-3. Be sad that these are a bunch of shell scripts instead of puppet or chef. Consider contributing a pull request to make it better. 
+2. Read each of those provisioning files in order to get a sense of what will happen.
 
 ### Step 4 - Bring up Vagrant
 *Note: This step may take a while*
 
 1. Enter your project directory
-2. Run the command `vagrant up`. Vagrant should download the appropriate box and run the provisioning scripts
-3. The provisioning scripts will create a directory for you to clone the source tree into, so don't worry about that at this point
+2. Run the command `vagrant up`. Vagrant should download the appropriate box and run the provisioning steps
 
-You need to reboot the VM, but restarting a Vagrant box from a provision script is hard. So go ahead and do that now. 
+### Step 6 - Explore the Vagrant box
+From the project directory, you can use the `vagrant ssh` command to bring up an SSH shell into the box. From inside the virtual machine, the source is located at `/www`. 
 
-1. `vagrant halt`
-2. `vagrant up`
-
-### Step 5 - Clone the source
-
-Your project directory wll now contain a `./www/bookclub` directory and your Vagrant box will contain a `/www/bookclub` directory at the root. 
-
-Vagrant's magic means that any changes you make in the *real* ./www/bookclub directory on your computer will be reflected in the virtual machine. 
-
-You will clone the source into this directory. I prefer to use git from my main machine but it doesn't really matter. 
-
-1. From your project directory, change into the source directory: `cd ./www/bookclub`
-2. Clone the source into that directory: `git clone https://github.com/YOU/bookclub.git .` (the end period is important to keep git from creating a bookclub subdirectory)
-
-### Step 6 - Explore the Vagrant box and install gems
-From the project directory, you can use the `vagrant ssh` command to bring up an SSH shell into the box. From inside the virtual machine, the source is located at `/www/bookclub`. 
-
-Before running `irb` or other ruby commands, you will need to ask rvm to change your environment to the correct ruby version. You will do this to follow the next steps to install the 
-necessary ruby gems. 
+Before running `irb` or other ruby commands, you will need to ask rvm to change your environment to the correct ruby version. 
+When you provision the box, the current set of required gems will be installed. If you add additional dependencies, you 
+may install them with the following steps: 
 
 1. From a "real" command prompt, change into your project directory and enter the `vagrant ssh` command to open an SSH shell into the virtual machine
-2. Change into the virtual source directory with `cd /www/bookclub`
+2. Change into the virtual source directory with `cd /www`
 3. Switch to the correct ruby environment with `rvm use 2.1.3`
-4. In the `/www/bookclub` directory, install the needed gems by running `bundle install`
+4. In the `/www` directory, install the needed gems by running `bundle install`
 
-Site errors over the course of development will be logged to `/var/log/nginx/errors` . You will need to become the superuser in order to `cat` this log by running `sudo su`. You 
-will not be prompted for a password. 
+Site errors over the course of development will be logged to `/var/log/nginx/errors` . You will need to become the superuser in order to `cat` this log by running `sudo su`. You will not be prompted for a password. 
 
 ### Step 7 - Configure the site
 

@@ -1,0 +1,32 @@
+---
+- hosts: all
+
+  tasks: 
+
+  # add additional repos before trying to use apt-get for anything
+  - include: 'repositories.ansible.yml'
+
+  - name: Install vim
+    become: yes
+    become_method: sudo
+    apt: name=vim state=present
+
+  - name: Install curl
+    become: yes
+    become_method: sudo
+    apt: name=curl state=present
+
+  - name: Install git
+    become: yes
+    become_method: sudo
+    apt: name=git state=present
+
+  - name: Install build-essential
+    become: yes
+    become_method: sudo
+    apt: name=build-essential state=present
+
+  - include: 'rvm.ansible.yml'
+  - include: 'ruby.ansible.yml'
+  - include: 'passenger.ansible.yml'
+  - include: 'redis.ansible.yml'
