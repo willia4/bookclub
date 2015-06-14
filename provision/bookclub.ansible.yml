@@ -26,6 +26,16 @@
     become_method: sudo
     apt: name=build-essential state=present
 
+  - name: "Detect existing /www directory"
+    stat: path='/www'
+    register: www
+
+  - name: "Create /www directory"
+    file: src=/vagrant/src dest=/www state=link
+    become: yes
+    become_method: sudo
+    when: not www.stat.exists
+
   - include: 'rvm.ansible.yml'
   - include: 'ruby.ansible.yml'
   - include: 'passenger.ansible.yml'

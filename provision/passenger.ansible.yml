@@ -1,13 +1,4 @@
 ---
-- name: "Detect existing /www directory"
-  stat: path='/www'
-  register: www
-
-- name: "Create /www directory"
-  file: src=/vagrant/src dest=/www state=link
-  become: yes
-  become_method: sudo
-  when: not www.stat.exists
 
 # will stash a 0 into nginx_package.rc if nginx is installed
 - name: Detect nginx
