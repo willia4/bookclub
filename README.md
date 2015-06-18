@@ -35,6 +35,11 @@ You may do whatever you'd like, but if you want to mimic my development environm
 [unicorn]: http://unicorn.bogomips.org/
 [luck]: http://stackoverflow.com/questions/9885108/ssh-to-vagrant-box-in-windows
 
+#### Docker 
+There is also a Dockerfile which can be used to build a container image for deployment. This is less useful for development as the source code is burned in to the created image (though that could be worked around with the right -v flag).
+
+The Docker image  does not contain a secrets.yaml file. Instead, the container must be configured via environment variables when running the container. The bottom of this file lists the environment variables that must be set. The most correct version of this list can also be found by reading `src/config.ru`. 
+
 ### Step 1 - Install Vagrant
 Follow the [getting started instructions][vagrant_start] for Vagrant to install and become familiar with Vagrant. My Vagrantfile uses the [ubuntu/trusty32][trusty] box which works 
 fine under [VirtualBox][virtualbox]
@@ -179,3 +184,47 @@ The application allows some general settings to be configured from `secrets.yaml
 ## Future
 
 Future development may require changes to the `secrets.yaml` file. No migration will be provided. Follow the commit log for more details. 
+
+## Environment Variables
+The application can also be configured via environment variables. When there is a conflict, the environment variables will supersede the values in the secrets.yaml file. 
+
+### AWS SDB Config
+* BOOKCLUB_AWS_SDB_REGION
+* BOOKCLUB_AWS_SDB_ACCESSKEY
+* BOOKCLUB_AWS_SDB_SECRET
+* BOOKCLUB_AWS_SDB_DOMAINPREFIX
+
+### AWS S3 Config
+* BOOKCLUB_AWS_S3_REGION
+* BOOKCLUB_AWS_S3_ACCESSKEY
+* BOOKCLUB_AWS_S3_SECRET
+* BOOKCLUB_AWS_S3_BUCKET
+
+### CSS Config
+* BOOKCLUB_CSS_CSSPATH
+* BOOKCLUB_CSS_SCSSPATH
+
+### Facebook Config
+* BOOKCLUB_FACEBOOK_APPID
+* BOOKCLUB_FACEBOOK_SECRET
+
+### Goodreads Config
+* BOOKCLUB_GOODREADS_APIKEY
+
+### General Config
+* BOOKCLUB_GENERAL_SITENAME
+* BOOKCLUB_GENERAL_BASEURL
+* BOOKCLUB_GENERAL_LOGINCOOKIE
+* BOOKCLUB_GENERAL_MODE
+
+### SMTP Config
+* BOOKCLUB_SMTP_SERVER
+* BOOKCLUB_SMTP_PORT
+* BOOKCLUB_SMTP_USERNAME
+* BOOKCLUB_SMTP_PASSWORD
+* BOOKCLUB_SMTP_FROMADDRESS
+
+### Redis Config (Optional - will default to local instance)
+* BOOKCLUB_REDIS_SERVER
+* BOOKCLUB_REDIS_PORT
+* BOOKCLUB_REDIS_DB
