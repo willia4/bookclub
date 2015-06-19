@@ -27,7 +27,7 @@
   become: yes
   become_method: sudo
   when: nginx_package.rc != 0
-  command: "sed '5iinclude /etc/nginx/main.d/*.conf\n' nginx.conf"
+  command: "sed '5iinclude /etc/nginx/main.d/*.conf\n' /etc/nginx/nginx.conf"
 
 - name: Add nginx environment variable config file
   become: yes
