@@ -35,14 +35,14 @@
   when: nginx_package.rc != 0
   copy: src='{{provision_path}}/nginx.environment.conf' dest='/etc/nginx/main.d/environment.conf
   
-# uncomment passenger_root in nginx and force passenger to use rvm's 2.1.3 ruby
+# uncomment passenger_root in nginx and force passenger to use rvm's 2.1.5 ruby
 - name: Update nginx.conf for passenger
   become: yes
   become_method: sudo
   when: nginx_package.rc != 0
   shell: >
     sed -i '/passenger_root/ s/# //' /etc/nginx/nginx.conf &&
-    sed -i '/passenger_ruby/c\\tpassenger_ruby /usr/local/rvm/gems/ruby-2.1.3/wrappers/ruby;' /etc/nginx/nginx.conf
+    sed -i '/passenger_ruby/c\\tpassenger_ruby /usr/local/rvm/gems/ruby-2.1.5/wrappers/ruby;' /etc/nginx/nginx.conf
 
 - name: Delete default virtual host
   become: yes
