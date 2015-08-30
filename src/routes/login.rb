@@ -48,10 +48,10 @@ get '/signin/facebook/finish' do
   facebook_id = info["bio"]["id"]
 
   #look up the user to see if they already exist
-  profile = Database::UserProfiles.find_user_profile_by_facebook_id(facebook_id)
+  profile = Database::UserProfiles.find_user_profile_by_facebook_id(request, facebook_id)
   
   if profile.nil? 
-    admin_profiles = Database::UserProfiles.list_admin_user_profiles 
+    admin_profiles = Database::UserProfiles.list_admin_user_profiles(request)
 
     profile = Models::UserProfile.new
     profile.user_status = "unconfirmed"

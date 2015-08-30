@@ -26,9 +26,9 @@ module Database
     end
 
     # Returns a profile if the session is valid or nil if it is not
-    def self.validate_user_session session_token
+    def self.validate_user_session(request, session_token)
       #check redis first 
-      profile = Redis.find_user_profile_for_session(session_token)
+      profile = Redis.find_user_profile_for_session(request, session_token)
       return profile if profile 
 
       #clean up when validating just to keep the domain tidy
@@ -43,7 +43,7 @@ module Database
       user_id = SDB.find_attribute(item, "user_id")
       return nil if user_id.nil? 
 
-      profile = Database::UserProfiles.find_user_profile_by_user_id(user_id)
+      profile = Database::UserProfiles.find_user_profile_by_user_id(request, user_id)
 
       #if we found the session in SDB, we should save it in redis for next time 
       Redis.store_session(session_token, profile)

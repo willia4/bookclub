@@ -12,7 +12,7 @@ module Models
     attr_accessor :author
     attr_accessor :summary_key
     attr_accessor :summary
-    attr_accessor :image_url
+    attr_writer :image_url
     attr_accessor :external_url
     attr_accessor :read
     attr_accessor :rejected
@@ -21,6 +21,11 @@ module Models
     #these are not filled in when loading a book but are there for the convenience of other methods
     attr_accessor :votes
     attr_accessor :user_vote
+
+    def initialize(request)
+      @scheme = request.scheme
+      @date_added = Time.now
+    end
 
     def read=(read)
       @read = ((read == "true") || (read == "yes") || (read == true))
@@ -56,12 +61,12 @@ module Models
       time_ago_in_words(@date_added)
     end
 
-    def book_url(request)
-      URI($config.make_url(request, "/books/book/#{self.book_id}"))
+    def image_url
+      Database::S3.fixup_s3_url_for_https(@scheme, @image_url)
     end
 
-    def initialize
-      @date_added = Time.now
+    def book_url(request)
+      URI($config.make_url(request, "/books/book/#{self.book_id}"))
     end
 
     def == other
@@ -86,8 +91,8 @@ module Models
       h.to_json
     end
 
-    def self.from_json(json_string)
-      r = Book.new
+    def self.from_json(request, json_string)
+      r = Book.new(request)
       h = JSON.parse(json_string)
 
       defaults = {"rejected" => "false", "addedby_id" => ""}

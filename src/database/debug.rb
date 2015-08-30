@@ -41,13 +41,13 @@ module Database
       tokens
     end
 
-    def self.delete_all_user_profiles
-      profiles = Database::UserProfiles.list_user_profiles
+    def self.delete_all_user_profiles(request)
+      profiles = Database::UserProfiles.list_user_profiles(request)
       Database::SDB.delete_items('profiles', profiles.map { |p| p.user_id })
     end
 
-    def self.delete_all_books
-      books = Database::Books.list_books
+    def self.delete_all_books(request)
+      books = Database::Books.list_books(request)
       Redis.delete_all_books
       Database::SDB.delete_items('books', books.map { |b| b.book_id })
     end

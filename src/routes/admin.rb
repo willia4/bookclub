@@ -16,13 +16,13 @@ end
 get '/admin/moderate/users' do
   @page_state[:page_title] = "Moderate Users"
   
-  @profiles = Database::UserProfiles.list_user_profiles.sort
+  @profiles = Database::UserProfiles.list_user_profiles(request).sort
 
   erb :moderate_users
 end
 
 post '/admin/moderate/users' do
-  profiles = Database::UserProfiles.list_user_profiles
+  profiles = Database::UserProfiles.list_user_profiles(request)
 
   changed_profiles = []
 

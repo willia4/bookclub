@@ -56,50 +56,50 @@ module Database
       end
     end
 
-    def self.list_books
-      return list_books_from_sdb_query("select * from #{SDB.build_domain("books")}")
+    def self.list_books(request)
+      return list_books_from_sdb_query(request, "select * from #{SDB.build_domain("books")}")
     end
 
-    def self.list_unread_books
-      return list_books_from_sdb_query("select * from #{SDB.build_domain("books")} where read = 'false' and (rejected is null or rejected = 'false') ")
+    def self.list_unread_books(request)
+      return list_books_from_sdb_query(request, "select * from #{SDB.build_domain("books")} where read = 'false' and (rejected is null or rejected = 'false') ")
     end
 
-    def self.list_rejected_books
-      return list_books_from_sdb_query("select * from #{SDB.build_domain("books")} where rejected = 'true'")
+    def self.list_rejected_books(request)
+      return list_books_from_sdb_query(request, "select * from #{SDB.build_domain("books")} where rejected = 'true'")
     end
 
-    def self.list_read_books
-      return list_books_from_sdb_query("select * from #{SDB.build_domain("books")} where read = 'true'")
+    def self.list_read_books(request)
+      return list_books_from_sdb_query(request, "select * from #{SDB.build_domain("books")} where read = 'true'")
     end
 
-    def self.find_book_by_book_id(book_id)
-      book = Redis.find_book_by_book_id(book_id)
+    def self.find_book_by_book_id(request, book_id)
+      book = Redis.find_book_by_book_id(request, book_id)
       return book if !book.nil?
 
       item = Database::SDB.find_first_item_by_attribute("books", "book_id", book_id)
       return nil if item.nil?
 
-      book = build_book_from_sdb_item(item)
+      book = build_book_from_sdb_item(request, item)
       Redis.store_book(book)
       return book
     end
 
-    def self.list_books_from_sdb_query query
+    def self.list_books_from_sdb_query(request, query)
       data = SDB.select(query)
 
       books = []
       data.each do |page|
-        books.concat(page.data.items.map { |i| build_book_from_sdb_item(i) })
+        books.concat(page.data.items.map { |i| build_book_from_sdb_item(request, i) })
       end
 
       books.each { |b| Redis.store_book(b) }
       return books
     end
 
-    def self.build_book_from_sdb_item(item)
+    def self.build_book_from_sdb_item(request, item)
       return nil if item.nil?
 
-      book = Models::Book.new
+      book = Models::Book.new(request)
       Models::Book.sdb_properties.each do |p|
         value = SDB.find_attribute(item, p).to_s
         method = p + "="

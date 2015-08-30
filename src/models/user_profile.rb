@@ -14,10 +14,18 @@ module Models
     attr_accessor :full_name
     attr_accessor :casual_name
     attr_accessor :email
-    attr_accessor :avatar_url 
+    attr_writer :avatar_url 
 
     attr_accessor :facebook_id
     attr_accessor :facebook_token
+
+    def initialize(request)
+      @scheme = request.scheme
+    end
+
+    def avatar_url
+      Database::S3.fixup_s3_url_for_https(@scheme, @avatar_url)
+    end
 
     def <=> other
       return self.full_name <=> other.full_name
@@ -32,8 +40,8 @@ module Models
       h.to_json
     end
 
-    def self.from_json(json_string)
-      r = UserProfile.new
+    def self.from_json(request, json_string)
+      r = UserProfile.new(request)
       h = JSON.parse(json_string)
 
       UserProfile.profile_properties.each do |p|

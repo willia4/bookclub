@@ -5,13 +5,13 @@ require './models/meeting.rb'
 require './exceptions/AppError.rb'
 require './exceptions/NotFoundError.rb'
 
-def get_nominated_books_for_meeting(meeting)
+def get_nominated_books_for_meeting(request, meeting)
   return [] if !meeting.selected_book_id.nil? && meeting.selected_book_id != ""
 
   votes = Database::Meetings.find_votes_for_meeting(meeting.meeting_id)
 
   nominated_books = meeting.nominated_book_ids.map do |bid|
-    book = Database::Books.find_book_by_book_id(bid)
+    book = Database::Books.find_book_by_book_id(request, bid)
     book_votes = votes.select { |v| v["book_id"] == bid }
     
     book.votes = book_votes.reduce(0) { |total, v| total + v["vote"] }
@@ -38,8 +38,8 @@ def get_nominated_books_for_meeting(meeting)
   return nominated_books
 end
 
-def get_json_nominated_books_for_meeting(meeting)
-  nominated_books = get_nominated_books_for_meeting(meeting)
+def get_json_nominated_books_for_meeting(request, meeting)
+  nominated_books = get_nominated_books_for_meeting(request, meeting)
 
   nominated_books = nominated_books.map do |b|
     date_added = Time.parse(b.date_added).getlocal
@@ -81,11 +81,11 @@ get '/meetings' do
   meetings = Database::Meetings.list_meetings
 
   meetings = meetings.map do |m|
-    b = m.selected_book_id.nil? ? nil : Database::Books.find_book_by_book_id(m.selected_book_id)
+    b = m.selected_book_id.nil? ? nil : Database::Books.find_book_by_book_id(request, m.selected_book_id)
     nominations = nil
 
     if !b
-      nominations = m.nominated_book_ids.map {|book_id| Database::Books.find_book_by_book_id(book_id) }
+      nominations = m.nominated_book_ids.map {|book_id| Database::Books.find_book_by_book_id(request, book_id) }
       nominations = nominations.map {|b| {:title => b.title, :cover => b.image_url} }
     end
 
@@ -141,7 +141,7 @@ post '/meetings/add' do
   newMeeting.location = location
   
   if add_random_nominations
-    books = Database::Books.list_unread_books
+    books = Database::Books.list_unread_books(request)
     books = books.sample(5)
     newMeeting.nominated_book_ids = books.map { |b| b.book_id }
   end
@@ -163,9 +163,9 @@ get '/meetings/meeting/:id' do |id|
 
   if @meeting.selected_book_id.nil? || @meeting.selected_book_id == "" 
     @selected_book = nil
-    @initial_state_json = get_json_nominated_books_for_meeting(@meeting).gsub("'", %q(\\\')) # http://stackoverflow.com/questions/10551982/replace-single-quote-with-backslash-single-quote
+    @initial_state_json = get_json_nominated_books_for_meeting(request, @meeting).gsub("'", %q(\\\')) # http://stackoverflow.com/questions/10551982/replace-single-quote-with-backslash-single-quote
   else
-    @selected_book = Database::Books.find_book_by_book_id(@meeting.selected_book_id)
+    @selected_book = Database::Books.find_book_by_book_id(request, @meeting.selected_book_id)
     @initial_state_json = '{}';
   end
 
@@ -206,7 +206,7 @@ delete '/meetings/meeting/:meeting_id' do |meeting_id|
   raise NotFoundError.new(action_name, "The meeting could not be found") if meeting.nil?
 
   if !meeting.selected_book_id.nil? && meeting.selected_book_id != "" 
-    selected_book = Database::Books.find_book_by_book_id(meeting.selected_book_id)
+    selected_book = Database::Books.find_book_by_book_id(request, meeting.selected_book_id)
     selected_book.read = false;
     Database::Books.save_book(selected_book)
   end
@@ -218,8 +218,8 @@ get '/meetings/meeting/:meeting_id/other_unread' do |meeting_id|
   meeting = Database::Meetings.find_meeting_by_meeting_id(meeting_id)
   raise NotFoundError.new("edit the requested meeting", "The meeting could not be found") if meeting.nil?
 
-  my_books = get_nominated_books_for_meeting(meeting)
-  books = Database::Books.list_unread_books
+  my_books = get_nominated_books_for_meeting(request, meeting)
+  books = Database::Books.list_unread_books(request)
 
   books = books
             .sort
@@ -245,7 +245,7 @@ get '/meetings/meeting/:meeting_id/books' do |meeting_id|
   status 200 
   content_type :json, 'charset' => 'utf-8'
   
-  get_json_nominated_books_for_meeting(meeting)
+  get_json_nominated_books_for_meeting(request, meeting)
 end
 
 post '/meetings/meeting/:meeting_id/books/:book_id/vote/:direction' do |meeting_id, book_id, direction|
@@ -283,7 +283,7 @@ post '/meetings/meeting/:meeting_id/books/:book_id/vote/:direction' do |meeting_
   status 200 
   content_type :json, 'charset' => 'utf-8'
   
-  get_json_nominated_books_for_meeting(meeting)
+  get_json_nominated_books_for_meeting(request, meeting)
 end
 
 put '/meetings/meeting/:meeting_id/books/:book_id' do |meeting_id, book_id|
@@ -291,7 +291,7 @@ put '/meetings/meeting/:meeting_id/books/:book_id' do |meeting_id, book_id|
     raise NotFoundError.new("adding a book to a meeting", "the meeting could not be found") if meeting.nil?
     raise NotFoundError.new("adding a book to a meeting", "the meeting is not open for voting") if (!meeting.selected_book_id.nil? && meeting.selected_book_id != "")
 
-    book = Database::Books.find_book_by_book_id(book_id)
+    book = Database::Books.find_book_by_book_id(request, book_id)
     raise NotFoundError.new("adding a book to a meeting", "the book could not be found") if book.nil?
 
     raise AppError.new("adding a book to a meeting", "this meeting already has this book") if meeting.nominated_book_ids.include?(book_id)
@@ -318,7 +318,7 @@ delete '/meetings/meeting/:meeting_id/books/:book_id' do |meeting_id, book_id|
 
   status 200
   content_type :json, 'charset' => 'utf-8'
-  get_json_nominated_books_for_meeting(meeting)
+  get_json_nominated_books_for_meeting(request, meeting)
 end
 
 get '/meetings/meeting/:meeting_id/books/:book_id/select' do |meeting_id, book_id|
@@ -329,7 +329,7 @@ get '/meetings/meeting/:meeting_id/books/:book_id/select' do |meeting_id, book_i
   raise AppError.new("selecting book", "this meeting is not open for voting") if (!meeting.selected_book_id.nil? && meeting.selected_book_id != "")
   raise NotFoundError.new("selecting book", "the book is not nominated for this meeting") if (meeting.nominated_book_ids.find { |bid| bid == book_id}).nil?
 
-  book = Database::Books.find_book_by_book_id(book_id)
+  book = Database::Books.find_book_by_book_id(request, book_id)
   raise NotFoundError.new("selecting book", "the book could not be found") if book.nil?
 
   meeting.selected_book_id = book.book_id

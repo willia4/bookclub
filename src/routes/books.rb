@@ -52,7 +52,7 @@ post '/books/add' do
     end
   end
 
-  book = Models::Book.new
+  book = Models::Book.new(request)
   book.title = title 
   book.author = author
   book.external_url = external_url
@@ -73,7 +73,7 @@ post '/books/add' do
 end
 
 get '/books/book/:book_id' do |book_id|
-  @book = Database::Books.find_book_by_book_id(book_id)
+  @book = Database::Books.find_book_by_book_id(request, book_id)
   @page_state[:page_title] = @book.title
 
   raise NotFoundError.new("load the requested book", "The book could not be found") if @book.nil?
@@ -85,7 +85,7 @@ end
 post '/books/book/:book_id' do |book_id|
   error_action = "edit_book"
 
-  book = Database::Books.find_book_by_book_id(book_id)
+  book = Database::Books.find_book_by_book_id(request, book_id)
   raise NotFoundError.new(errorAction, "The book could not be found") if book.nil?
 
   user = @session_state[:user_profile]
@@ -148,7 +148,7 @@ end
 delete '/books/book/:book_id' do |book_id|
   action_name = "delete a book"
   
-  book = Database::Books.find_book_by_book_id(book_id)
+  book = Database::Books.find_book_by_book_id(request, book_id)
   raise NotFoundError.new(action_name, "The book could not be found") if book.nil?
 
   raise AuthorizationError.new(action_name, "Only administrators may delete books") if not @session_state[:show_admin]
@@ -218,25 +218,25 @@ end
 get '/books/unread.json' do 
   content_type :json, 'charset' => 'utf-8'
 
-  JSON.pretty_generate(map_books_to_json_hash(request, Database::Books.list_unread_books()))
+  JSON.pretty_generate(map_books_to_json_hash(request, Database::Books.list_unread_books(request)))
 end
 
 get '/books/read.json' do
   content_type :json, 'charset' => 'utf-8'
 
-  JSON.pretty_generate(map_books_to_json_hash(request, Database::Books.list_read_books()))
+  JSON.pretty_generate(map_books_to_json_hash(request, Database::Books.list_read_books(request)))
 end
 
 get '/books/rejected.json' do
   content_type :json, 'charset' => 'utf-8'
 
-  JSON.pretty_generate(map_books_to_json_hash(request, Database::Books.list_rejected_books()))
+  JSON.pretty_generate(map_books_to_json_hash(request, Database::Books.list_rejected_books(request)))
 end
 
 post '/books/book/:book_id/reject' do |book_id|
   errorAction = "reject book from future consideration"
 
-  book = Database::Books.find_book_by_book_id(book_id)
+  book = Database::Books.find_book_by_book_id(request, book_id)
   raise NotFoundError.new(errorAction, "The book could not be found") if book.nil?
 
   user = @session_state[:user_profile]
@@ -256,13 +256,13 @@ post '/books/book/:book_id/reject' do |book_id|
   status 200
   content_type :json, 'charset' => 'utf-8'
 
-  JSON.pretty_generate(map_books_to_json_hash(request, Database::Books.list_unread_books()))
+  JSON.pretty_generate(map_books_to_json_hash(request, Database::Books.list_unread_books(request)))
 end
 
 post '/books/book/:book_id/unreject' do |book_id|
   errorAction = "un-reject book back to future consideration"
 
-  book = Database::Books.find_book_by_book_id(book_id)
+  book = Database::Books.find_book_by_book_id(request, book_id)
   raise NotFoundError.new(errorAction, "The book could not be found") if book.nil?
 
   user = @session_state[:user_profile]
@@ -279,5 +279,5 @@ post '/books/book/:book_id/unreject' do |book_id|
   status 200
   content_type :json, 'charset' => 'utf-8'
 
-  JSON.pretty_generate(map_books_to_json_hash(request, Database::Books.list_rejected_books()))
+  JSON.pretty_generate(map_books_to_json_hash(request, Database::Books.list_rejected_books(request)))
 end

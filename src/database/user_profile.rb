@@ -5,14 +5,14 @@ require './models/user_profile.rb'
 
 module Database
   module UserProfiles
-    def self.find_user_profile_by_user_id user_id
+    def self.find_user_profile_by_user_id(request, user_id)
       item = Database::SDB.find_first_item_by_attribute("profiles", "user_id", user_id)
-      return build_profile_from_sdb_item(item)
+      return build_profile_from_sdb_item(request, item)
     end
 
-    def self.find_user_profile_by_facebook_id facebook_id 
+    def self.find_user_profile_by_facebook_id(request, facebook_id) 
       item = Database::SDB.find_first_item_by_attribute("profiles", "facebook_id", facebook_id)
-      return build_profile_from_sdb_item(item)
+      return build_profile_from_sdb_item(request, item)
     end
 
     def self.save_user_profile profile 
@@ -55,34 +55,34 @@ module Database
       return 0
     end
 
-    def self.list_user_profiles
+    def self.list_user_profiles(request)
       query = "select * from #{SDB.build_domain("profiles")}"
       data = SDB.select(query)
 
       profiles = []
       data.each do |page|
-        profiles.concat page.data.items.map { |i| build_profile_from_sdb_item(i) }
+        profiles.concat page.data.items.map { |i| build_profile_from_sdb_item(request, i) }
       end
 
       return profiles
     end
 
-    def self.list_admin_user_profiles
+    def self.list_admin_user_profiles(request)
       query = "select * from #{SDB.build_domain("profiles")} where user_status = 'admin'"
       data = SDB.select(query)
 
       profiles = []
       data.each do |page|
-        profiles.concat page.data.items.map { |i| build_profile_from_sdb_item(i) }
+        profiles.concat page.data.items.map { |i| build_profile_from_sdb_item(request, i) }
       end
 
       return profiles
     end
 
-    def self.build_profile_from_sdb_item item
+    def self.build_profile_from_sdb_item(request, item)
       return nil if item.nil? 
 
-      profile = Models::UserProfile.new
+      profile = Models::UserProfile.new(request)
 
       Models::UserProfile.profile_properties.each do |p|
         value = SDB.find_attribute(item, p).to_s

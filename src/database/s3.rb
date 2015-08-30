@@ -113,5 +113,35 @@ module Database
         true
       end
     end
+
+    def self.fixup_s3_url_for_https(scheme, s3_url)
+      #this is gross, but it avoids having to migrate data in SDB. 
+      #because our bucketnames may have dots in them, we can't use https://bucket.name.s3.amazonaws.com
+      #(amazon's wildcard TLS sert only works for bucket names without dots).
+      #so we need to use the https://s3.amazonaws.com/bucket.name/key form of the url to get a valid
+      #https connection. But we've been storing the first form in SDB for months. 
+      #fortunately, rewriting the stored URL is fairly easy...
+
+      url = URI(s3_url)
+
+      if url.host.include?("s3.amazonaws.com")
+        bucket = url.host 
+        bucket.slice!(".s3.amazonaws.com")
+        bucket = "/#{bucket}/" #URI.join needs the middle portions of a path to be surrounded by "/"s
+
+        key = url.path 
+        key.slice!("/")        #the path comes in with a "/" but URI.join needs the end portion to not have a "/"
+
+        url = URI("http://s3.amazonaws.com")
+        url = URI.join(url, bucket, key)
+        url.scheme = scheme
+      else
+        #if this doesn't look like an S3 url, just fix the scheme
+        url.scheme = scheme
+      end
+
+      return url.to_s
+    end
+
   end
 end

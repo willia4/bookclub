@@ -52,7 +52,7 @@ module Database
       redis.expire(key, expiration_time_in_seconds)
     end
 
-    def self.find_user_profile_for_session(session_token)
+    def self.find_user_profile_for_session(request, session_token)
       redis = get_database_client
 
       pattern = "session:#{session_token}:*"
@@ -61,7 +61,7 @@ module Database
       if keys.size > 0 
         key = keys[0]
         json = redis.get(key)
-        return Models::UserProfile.from_json(json)
+        return Models::UserProfile.from_json(request, json)
       end
 
       return nil
@@ -89,11 +89,11 @@ module Database
       redis.expire(key, expiration_time_in_seconds)
     end
 
-    def self.find_book_by_book_id(book_id)
+    def self.find_book_by_book_id(request, book_id)
       redis = get_database_client
       json = redis.get("book:#{book_id}")
       return nil if json.nil? 
-      return Models::Book.from_json(json)
+      return Models::Book.from_json(request, json)
     end
 
     def self.delete_book_id(book_id)

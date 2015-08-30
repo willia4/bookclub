@@ -17,7 +17,7 @@ before do
 
   session_token = request.cookies[$config[:general][:login_cookie]]
   if !session_token.nil? && session_token != ""
-    profile = Database::UserSessions.validate_user_session session_token
+    profile = Database::UserSessions.validate_user_session(request, session_token)
     if !profile.nil?
       @session_state[:logged_in] = true
       @session_state[:user_profile] = profile
@@ -65,9 +65,9 @@ require './routes/meetings.rb'
 
 get '/' do
   @future_meetings = (Database::Meetings.list_future_meetings.sort_by { |m| m.date }).map do |m|
-    selected_book = (m.selected_book_id.nil? || m.selected_book_id == "") ? nil : Database::Books.find_book_by_book_id(m.selected_book_id)
+    selected_book = (m.selected_book_id.nil? || m.selected_book_id == "") ? nil : Database::Books.find_book_by_book_id(request, m.selected_book_id)
 
-    nominated_books = selected_book.nil? ? m.nominated_book_ids.map { |b| Database::Books.find_book_by_book_id(b) } : nil
+    nominated_books = selected_book.nil? ? m.nominated_book_ids.map { |b| Database::Books.find_book_by_book_id(request, b) } : nil
     nominated_books = nominated_books.nil? ? nil : nominated_books.shuffle
 
     {:meeting => m, :selected_book => selected_book, :nominated_books => nominated_books}
