@@ -65,11 +65,11 @@ $(document).ready(function () {
 							</div>
 							<% else %>
 							<div class="row">
-								<div class="col-sm-12"><a href="<%= selected_book.book_url %>"><i><b><%= selected_book.title %></b></i></a></div>
+								<div class="col-sm-12"><a href="<%= selected_book.book_url(@page_state[:request]) %>"><i><b><%= selected_book.title %></b></i></a></div>
 							</div>
 							<% if selected_book.image_url && selected_book.image_url != "" %>
 							<div class="row">
-								<div class="col-sm-12 meeting-book-image"><a href="<%= selected_book.book_url %>"><img src="<%= selected_book.image_url %>"/></a></div>
+								<div class="col-sm-12 meeting-book-image"><a href="<%= selected_book.book_url(@page_state[:request]) %>"><img src="<%= selected_book.image_url %>"/></a></div>
 							</div>
 							<% end%>
 							<% end %>

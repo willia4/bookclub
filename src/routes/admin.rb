@@ -72,5 +72,5 @@ post '/admin/moderate/users' do
     changed_profiles.each {|p| Database::UserProfiles.save_user_profile p}
   end
 
-  redirect URI.join($config[:general][:base_url], "/admin/moderate/users"), 303
+  redirect $config.make_url(request, "/admin/moderate/users"), 303
 end

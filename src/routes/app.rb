@@ -28,7 +28,8 @@ before do
 
   @page_state = {
     :site_title => $config[:general][:site_name],
-    :page_title => $config[:general][:site_name]
+    :page_title => $config[:general][:site_name],
+    :request => request
   }
 
   # We miss you, Sir Terry. http://www.gnuterrypratchett.com/

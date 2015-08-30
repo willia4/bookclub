@@ -56,9 +56,8 @@ module Models
       time_ago_in_words(@date_added)
     end
 
-    def book_url
-      base = $config[:general][:base_url]
-      URI.join(base, "/books/book/#{self.book_id}")
+    def book_url(request)
+      URI($config.make_url(request, "/books/book/#{self.book_id}"))
     end
 
     def initialize

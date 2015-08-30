@@ -119,4 +119,18 @@ helpers Sinatra::ContentFor2
 
 require './routes/app.rb'
 
+#add a method to the $config global variable to make it easier to build URLs
+class << $config
+  def make_url(request, path = nil)
+    url = URI($config[:general][:base_url])
+    url.scheme = request.scheme
+    
+    if !path.nil?
+      url = URI.join(url, path)
+    end
+
+    return url.to_s
+  end
+end
+
 run Sinatra::Application

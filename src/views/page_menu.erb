@@ -6,7 +6,7 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		<a href="<%= $config[:general][:base_url] %>" class="navbar-brand">
+		<a href="<%= $config.make_url(@page_state[:request]) %>" class="navbar-brand">
 			<img class="site-logo" src="/images/favicomatic/favicon-196x196.png"/>
 			<%= $config[:general][:site_name] %></a>
 	</div>

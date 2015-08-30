@@ -1,7 +1,7 @@
 module APIs
   module Facebook
-    def self.login_finish_redirect_url
-      return URI.join($config[:general][:base_url], '/signin/facebook/finish').to_s
+    def self.login_finish_redirect_url(request)
+      return $config.make_url(request, '/signin/facebook/finish')
     end
 
     class FacebookAPIError < StandardError
@@ -68,11 +68,11 @@ module APIs
       return $facebook_app_token
     end
 
-    def self.get_facebook_token_from_code(code)
+    def self.get_facebook_token_from_code(request, code)
       response = make_graph_api_call  endpoint: "/oauth/access_token", 
                       parameters: {
                           "client_id" => $config[:facebook][:app_id].to_s,
-                          "redirect_uri" => login_finish_redirect_url,
+                          "redirect_uri" => login_finish_redirect_url(request),
                           "client_secret" => $config[:facebook][:secret].to_s,
                           "code" => code
                         }

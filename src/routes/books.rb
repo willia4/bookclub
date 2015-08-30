@@ -67,10 +67,9 @@ post '/books/add' do
 
   status 200
   content_type :json, 'charset' => 'utf-8'
-  base_url = $config[:general][:base_url]
-  book_url = URI.join(base_url, "/books/book/#{book.book_id}").to_s
+  book_url = $config.make_url(request, "/books/book/#{book.book_id}")
 
-  JSON.pretty_generate({"book_id" => book.book_id, "book_url" => book_url, "redirect_url" => base_url})   
+  JSON.pretty_generate({"book_id" => book.book_id, "book_url" => book_url, "redirect_url" => $config.make_url(request)})   
 end
 
 get '/books/book/:book_id' do |book_id|
@@ -195,7 +194,7 @@ get '/books/goodreads/info/:id' do |id|
   JSON.pretty_generate(data)
 end
 
-def map_books_to_json_hash(books)
+def map_books_to_json_hash(request, books)
   books.map do |book|
     date_added = Time.parse(book.date_added).getlocal
     today = Time.now.getlocal
@@ -204,7 +203,7 @@ def map_books_to_json_hash(books)
 
     {
       "book_id" => book.book_id,
-      "book_url" => book.book_url,
+      "book_url" => book.book_url(request),
       "title" => book.title,
       "author" => book.author,
       "image_url" => book.image_url,
@@ -219,19 +218,19 @@ end
 get '/books/unread.json' do 
   content_type :json, 'charset' => 'utf-8'
 
-  JSON.pretty_generate(map_books_to_json_hash(Database::Books.list_unread_books()))
+  JSON.pretty_generate(map_books_to_json_hash(request, Database::Books.list_unread_books()))
 end
 
 get '/books/read.json' do
   content_type :json, 'charset' => 'utf-8'
 
-  JSON.pretty_generate(map_books_to_json_hash(Database::Books.list_read_books()))
+  JSON.pretty_generate(map_books_to_json_hash(request, Database::Books.list_read_books()))
 end
 
 get '/books/rejected.json' do
   content_type :json, 'charset' => 'utf-8'
 
-  JSON.pretty_generate(map_books_to_json_hash(Database::Books.list_rejected_books()))
+  JSON.pretty_generate(map_books_to_json_hash(request, Database::Books.list_rejected_books()))
 end
 
 post '/books/book/:book_id/reject' do |book_id|
@@ -257,7 +256,7 @@ post '/books/book/:book_id/reject' do |book_id|
   status 200
   content_type :json, 'charset' => 'utf-8'
 
-  JSON.pretty_generate(map_books_to_json_hash(Database::Books.list_unread_books()))
+  JSON.pretty_generate(map_books_to_json_hash(request, Database::Books.list_unread_books()))
 end
 
 post '/books/book/:book_id/unreject' do |book_id|
@@ -280,5 +279,5 @@ post '/books/book/:book_id/unreject' do |book_id|
   status 200
   content_type :json, 'charset' => 'utf-8'
 
-  JSON.pretty_generate(map_books_to_json_hash(Database::Books.list_rejected_books()))
+  JSON.pretty_generate(map_books_to_json_hash(request, Database::Books.list_rejected_books()))
 end

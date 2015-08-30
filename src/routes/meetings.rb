@@ -54,7 +54,7 @@ def get_json_nominated_books_for_meeting(meeting)
       :image_url => b.image_url,
       :title => b.title,
       :author => b.author,
-      :book_url => b.book_url,
+      :book_url => b.book_url(request),
       :date_added => date_added,
       :date_added_formatted => date_added.strftime("%Y-%b-%d @ %I:%M%P %Z"),
       :age_statement => age,
@@ -150,8 +150,7 @@ post '/meetings/add' do
 
   status 200 
   content_type :json, 'charset' => 'utf-8'
-  base_url = $config[:general][:base_url]
-  meeting_url = URI.join(base_url, "/meetings/meeting/#{newMeeting.meeting_id}").to_s
+  meeting_url = $config.make_url(request, "/meetings/meeting/#{newMeeting.meeting_id}")
 
   JSON.pretty_generate({"meeting_id" => newMeeting.meeting_id, "meeting_url" => meeting_url, "redirect_url" => meeting_url})   
 end

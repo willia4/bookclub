@@ -16,7 +16,7 @@ end
 
 get '/signin/facebook/begin' do
   app_id = URI.encode($config[:facebook][:app_id].to_s)
-  redirect_url = URI.encode(APIs::Facebook.login_finish_redirect_url)
+  redirect_url = URI.encode(APIs::Facebook.login_finish_redirect_url(request))
 
   xsrf_token = Database::XSRFTokens.create_xsrf_token
   state = URI.encode(Database::XSRFTokens.create_xsrf_token)
@@ -42,7 +42,7 @@ get '/signin/facebook/finish' do
 
   #turn the Facebook code into a token
   code = URI.encode(params["code"])
-  token = APIs::Facebook.get_facebook_token_from_code code
+  token = APIs::Facebook.get_facebook_token_from_code(request, code)
   info = APIs::Facebook.inspect_facebook_token token 
 
   facebook_id = info["bio"]["id"]
@@ -96,7 +96,7 @@ get '/signin/facebook/finish' do
                                                         :expires => expires,
                                                         :max_age => max_age_seconds)
 
-  redirect $config[:general][:base_url], 302
+  redirect $config.make_url(request), 302
 end
 
 get '/signout' do
@@ -110,5 +110,5 @@ get '/signout' do
                                                         :expires => Time.now,
                                                         :max_age => 0)
 
-  redirect $config[:general][:base_url], 302
+  redirect $config.make_url(request), 302
 end
