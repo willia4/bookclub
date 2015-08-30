@@ -8,7 +8,7 @@ Using pay-for-use web services is not without a cost; however, at the size of a 
 There is a dependency on redis for caching but the server is configurable -- so you may use something like Amazon's ElastiCache if you'd like. A micro instance of that costs about $12/mo. Network bandwidth may be an issue if you're not hosting in EC2 as well, however. 
 
 # Getting Started
-BB Bookclub is a [Sinatra][sinatra] app developed and tested under ruby 2.1.3. It uses Amazon's [SDB][sdb] and [S3][s3] for data storage with a local [Redis][redis] 
+BB Bookclub is a [Sinatra][sinatra] app developed and tested under ruby 2.1.5. It uses Amazon's [SDB][sdb] and [S3][s3] for data storage with a local [Redis][redis] 
 caching layer for performance. CSS files written in [SCSS][sass] are processed and cached by a dedicated Sinatra endpoint (I ended up with this strange design to avoid having to 
 run some sort of watch command during development; this decision should be revisted once the CSS files are mostly stable). The UI depends on bootstrap and some Javascript libraries 
 which are still in flux. 
@@ -75,7 +75,7 @@ may install them with the following steps:
 
 1. From a "real" command prompt, change into your project directory and enter the `vagrant ssh` command to open an SSH shell into the virtual machine
 2. Change into the virtual source directory with `cd /www`
-3. Switch to the correct ruby environment with `rvm use 2.1.3`
+3. Switch to the correct ruby environment with `rvm use 2.1.5`
 4. In the `/www` directory, install the needed gems by running `bundle install`
 
 Site errors over the course of development will be logged to `/var/log/nginx/errors` . You will need to become the superuser in order to `cat` this log by running `sudo su`. You will not be prompted for a password. 
@@ -91,7 +91,7 @@ Now that you have confingured Amazon's web services, SDB needs to be initailized
 
 1. From a "real" command prompt, change into your project directory and enter the `vagrant ssh` command to open an SSH shell into the virtual machine
 2. Change into the virtual source directory with `cd /www/bookclub`
-3. Switch to the correct ruby environment with `rvm use 2.1.3`
+3. Switch to the correct ruby environment with `rvm use 2.1.5`
 4. Start the interactive ruby interpreter with `irb`
 5. In irb, load YAML with `require "yaml"` - ruby should return `=> true`
 6. In irb, load your configuration with `$config = YAML::load(File.open("secrets.yaml"))` - ruby should return a hash of your secrets file
