@@ -9,7 +9,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "bookclub_local" do |node|
     node.vm.box = "ubuntu/trusty32"
-    node.vm.network "forwarded_port", guest: 80, host: 8080
+    #node.vm.network "forwarded_port", guest: 80, host: 8080
+    #node.vm.network "forwarded_port", guest:443, host: 8443
+    
+    node.vm.network "private_network", ip: "172.16.3.14"
 
     node.vm.provision "ansible" do |ansible|
       ansible.playbook = "provision/bookclub.ansible.yml"

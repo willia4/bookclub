@@ -33,8 +33,23 @@
   become: yes
   become_method: sudo
   when: nginx_package.rc != 0
-  copy: src='{{provision_path}}/nginx.environment.conf' dest='/etc/nginx/main.d/environment.conf
-  
+  copy: src='{{provision_path}}/nginx.environment.conf' dest='/etc/nginx/main.d/environment.conf'
+
+- name: Ensure certificate directory exists
+  become: yes
+  become_method: sudo
+  file: path=/etc/nginx/ssl state=directory
+
+- name: Copy self-signed certificate
+  become: yes
+  become_method: sudo
+  copy: src='{{provision_path}}/DO_NOT_TRUST.ssl.vagrant.testbookclub.com.crt' dest='/etc/nginx/ssl/DO_NOT_TRUST.ssl.vagrant.testbookclub.com.crt'
+
+- name: Copy self-signed key
+  become: yes
+  become_method: sudo
+  copy: src='{{provision_path}}/DO_NOT_TRUST.ssl.vagrant.testbookclub.com.key' dest='/etc/nginx/ssl/DO_NOT_TRUST.ssl.vagrant.testbookclub.com.key'
+
 # uncomment passenger_root in nginx and force passenger to use rvm's 2.1.5 ruby
 - name: Update nginx.conf for passenger
   become: yes

@@ -58,6 +58,7 @@ and a `src` directory containing the application source.
 
 1. Read over the `Vagrantfile` to get a sense of what it will do. The list of provisioning steps are at the bottom of the file. 
 2. Read each of those provisioning files in order to get a sense of what will happen.
+3. Pay special attention to the network section of the `Vagrantfile`. Instead of forwarding ports, the default configuration will now use a static IP address. This makes it much easier to test HTTPS redirects as the app does not need to try to rewrite the normal port 443 to the forwarded port. The static IP address of `172.16.3.14` was chosen to minimize the chance that it would intefere with any given network: however, you should double-check to ensure that this IP address will not create network conflicts for you. You may need to change the network configuration to better suit your environment.
 
 ### Step 4 - Bring up Vagrant
 *Note: This step may take a while*

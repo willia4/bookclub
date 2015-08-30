@@ -21,9 +21,14 @@ server {
 	listen 80 default_server;
 	listen [::]:80 default_server ipv6only=on;
 
-	# Make site accessible from http://localhost/
-	server_name localhost;
+	listen 443 ssl;
+    listen [::]:443 ssl;
 
+	# Make site accessible from http://localhost/
+	server_name localhost vagrant.testbookclub.com;
+	ssl_certificate /etc/nginx/ssl/DO_NOT_TRUST.ssl.vagrant.testbookclub.com.crt;
+    ssl_certificate_key /etc/nginx/ssl/DO_NOT_TRUST.ssl.vagrant.testbookclub.com.key;
+    
 	root /www/public;
 	passenger_enabled on;
 
