@@ -57,7 +57,7 @@
   when: nginx_package.rc != 0
   shell: >
     sed -i '/passenger_root/ s/# //' /etc/nginx/nginx.conf &&
-    sed -i '/passenger_ruby/c\\tpassenger_ruby /usr/local/rvm/gems/ruby-2.1.5/wrappers/ruby;' /etc/nginx/nginx.conf
+    sed -i '/passenger_ruby/c\passenger_ruby /usr/local/rvm/gems/ruby-2.1.5/wrappers/ruby;' /etc/nginx/nginx.conf
 
 - name: Delete default virtual host
   become: yes
