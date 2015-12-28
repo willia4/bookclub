@@ -124,7 +124,7 @@ module Database
 
       url = URI(s3_url)
 
-      if url.host.include?("s3.amazonaws.com")
+      if url.host.include?(".s3.amazonaws.com")
         bucket = url.host 
         bucket.slice!(".s3.amazonaws.com")
         bucket = "/#{bucket}/" #URI.join needs the middle portions of a path to be surrounded by "/"s
