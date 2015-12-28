@@ -20,7 +20,11 @@ module Models
     attr_accessor :facebook_token
 
     def initialize(request)
-      @scheme = request.scheme
+      if request.nil? || request.scheme.nil?
+        @scheme = "http"
+      else
+        @scheme = request.scheme
+      end
     end
 
     def avatar_url
