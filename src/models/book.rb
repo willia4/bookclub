@@ -23,7 +23,12 @@ module Models
     attr_accessor :user_vote
 
     def initialize(request)
-      @scheme = request.scheme
+      if request.nil? || request.scheme.nil?
+        @scheme = 'http'
+      else
+        @scheme = request.scheme
+      end
+      
       @date_added = Time.now
     end
 
