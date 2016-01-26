@@ -1,4 +1,6 @@
 require 'action_view' 
+require 'active_support/all'
+
 include ActionView::Helpers::DateHelper
 
 module Models
