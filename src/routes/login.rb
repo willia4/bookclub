@@ -53,7 +53,7 @@ get '/signin/facebook/finish' do
   if profile.nil? 
     admin_profiles = Database::UserProfiles.list_admin_user_profiles(request)
 
-    profile = Models::UserProfile.new
+    profile = Models::UserProfile.new(request)
     profile.user_status = "unconfirmed"
 
     profile.full_name = info["bio"]["name"]
